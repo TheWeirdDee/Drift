@@ -21,7 +21,7 @@ app = FastAPI(title="DRIFT API", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -117,44 +117,21 @@ async def get_similar_entries(entry_id: str, limit: int = 5):
 @app.post("/entries/batch")
 async def create_batch_entries(entries: list[EntryCreate]):
     """Seed the database with demo data."""
-    if not entries:
-        return {"created": 0, "ids": []}
-    
-    # Batch generate embeddings
-    texts = [e.text for e in entries]
-    from embeddings import get_batch_embeddings
-    vectors = get_batch_embeddings(texts)
-    
-    # Prepare batch points for Qdrant
-    from qdrant_client.models import PointStruct
-    from qdrant_service import get_client, COLLECTION_NAME
-    
-    points = []
-    created_ids = []
-    for entry, vector in zip(entries, vectors):
+    created = []
+    for entry in entries:
         entry_id = str(uuid.uuid4())
         timestamp = entry.timestamp or datetime.utcnow().isoformat()
-        points.append(
-            PointStruct(
-                id=entry_id,
-                vector=vector,
-                payload={
-                    "text": entry.text,
-                    "timestamp": timestamp,
-                    "source": "text",
-                    "title": entry.title or ""
-                }
-            )
+        vector = get_embedding(entry.text)
+        await upsert_entry(
+            entry_id=entry_id,
+            vector=vector,
+            text=entry.text,
+            timestamp=timestamp,
+            source="text",
+            title=entry.title or ""
         )
-        created_ids.append(entry_id)
-        
-    client = get_client()
-    await client.upsert(
-        collection_name=COLLECTION_NAME,
-        points=points
-    )
-    
-    return {"created": len(created_ids), "ids": created_ids}
+        created.append(entry_id)
+    return {"created": len(created), "ids": created}
 
 
 @app.get("/report/weekly")
