@@ -35,6 +35,7 @@ const S = {
     fontFamily: '"Cormorant Garamond", "Georgia", serif',
     fontWeight: 300,
     letterSpacing: '0.4em',
+    paddingLeft: '0.4em',
     color: '#c8c8d4',
     marginBottom: '1.5rem',
     lineHeight: 1,
@@ -397,7 +398,9 @@ export default function Home() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&family=Outfit:wght@200;300;400&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        @media(min-width:641px){ * { cursor: none !important; } }
+        @media(max-width:640px){ .custom-cursor { display: none !important; } }
         html { background: #050508; scroll-behavior: smooth; }
         body { -webkit-font-smoothing: antialiased; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 3px; }
@@ -408,6 +411,15 @@ export default function Home() {
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
           to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+        @keyframes letterFadeIn {
+          from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+          to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+        .drift-letter {
+          display: inline-block;
+          opacity: 0;
+          animation: letterFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         @keyframes wordSwap {
           0%,100% { opacity:0; transform: translateY(12px); }
@@ -425,11 +437,41 @@ export default function Home() {
           position: fixed; inset: 0; pointer-events: none; z-index: 0;
           background: radial-gradient(ellipse 55% 45% at 50% 50%, rgba(176,136,255,0.05) 0%, transparent 70%);
         }
+
+        .nav-container {
+          position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 1.5rem 3rem;
+          background: rgba(5,5,8,0.35);
+          border-bottom: 1px solid rgba(255,255,255,0.02);
+          backdrop-filter: blur(20px);
+          transition: padding 0.3s;
+        }
+        .nav-links a {
+          color: #b0b0c5 !important;
+          transition: color 0.2s;
+        }
+        .nav-links a:hover {
+          color: #ffffff !important;
+        }
+        @media (max-width: 640px) {
+          .nav-container {
+            padding: 1rem 1.5rem !important;
+          }
+          .nav-links {
+            gap: 0.75rem !important;
+          }
+          .nav-links a span {
+            font-size: 0.58rem !important;
+            letter-spacing: 0.12em !important;
+            padding: 6px 12px !important;
+          }
+        }
       `}</style>
 
       {/* Cursor */}
-      <div ref={cursorRef} style={S.cursor} />
-      <div ref={ringRef} style={S.cursorRing} />
+      <div ref={cursorRef} className="custom-cursor" style={S.cursor} />
+      <div ref={ringRef} className="custom-cursor" style={S.cursorRing} />
 
       {/* Particle bg */}
       <canvas ref={canvasRef} style={S.canvas} />
@@ -438,16 +480,9 @@ export default function Home() {
       <main style={S.page}>
 
         {/* Nav */}
-        <nav style={{
-          position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '1.5rem 3rem',
-          background: 'rgba(5,5,8,0.35)',
-          borderBottom: '1px solid rgba(255,255,255,0.02)',
-          backdropFilter: 'blur(20px)',
-        }}>
+        <nav className="nav-container">
           <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" style={{ display: 'block' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" style={{ display: 'block' }}>
               <rect width="32" height="32" fill="#050508" rx="6"/>
               <line x1="16" y1="14" x2="22" y2="10" stroke="rgba(176,136,255,0.3)" strokeWidth="0.8"/>
               <line x1="16" y1="14" x2="22" y2="19" stroke="rgba(176,136,255,0.3)" strokeWidth="0.8"/>
@@ -472,16 +507,16 @@ export default function Home() {
             </svg>
             <span style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: '1.4rem', fontWeight: 300, color: '#c8c8d4', letterSpacing: '0.1em' }}>DRIFT</span>
           </Link>
-          <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+          <div className="nav-links" style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
             <Link href="/constellation" style={{ textDecoration: 'none' }}>
-              <span style={{ fontFamily: '"DM Mono", monospace', fontSize: '0.65rem', color: '#50505e', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Constellation</span>
+              <span style={{ fontFamily: '"DM Mono", monospace', fontSize: '0.65rem', color: 'inherit', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Constellation</span>
             </Link>
             <Link href="/report" style={{ textDecoration: 'none' }}>
-              <span style={{ fontFamily: '"DM Mono", monospace', fontSize: '0.65rem', color: '#50505e', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Weekly Report</span>
+              <span style={{ fontFamily: '"DM Mono", monospace', fontSize: '0.65rem', color: 'inherit', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Weekly Report</span>
             </Link>
             <Link href="/journal" style={{ textDecoration: 'none' }}>
               <span style={{
-                fontFamily: '"DM Mono", monospace', fontSize: '0.65rem', color: '#50505e',
+                fontFamily: '"DM Mono", monospace', fontSize: '0.65rem', color: 'inherit',
                 letterSpacing: '0.18em', textTransform: 'uppercase',
                 border: '1px solid #1a1a2e', padding: '8px 16px',
               }}>+ New Entry</span>
@@ -491,32 +526,17 @@ export default function Home() {
 
         {/* ── HERO ── */}
         <section style={S.hero}>
-          <div className="fade-1" style={{ marginBottom: '1.5rem' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="80" height="80" style={{ display: 'block', margin: '0 auto' }}>
-              <rect width="32" height="32" fill="#050508" rx="6"/>
-              <line x1="16" y1="14" x2="22" y2="10" stroke="rgba(176,136,255,0.3)" strokeWidth="0.8"/>
-              <line x1="16" y1="14" x2="22" y2="19" stroke="rgba(176,136,255,0.3)" strokeWidth="0.8"/>
-              <line x1="16" y1="14" x2="10" y2="11" stroke="rgba(126,184,247,0.3)" strokeWidth="0.8"/>
-              <line x1="22" y1="10" x2="22" y2="19" stroke="rgba(176,136,255,0.2)" strokeWidth="0.8"/>
-              <line x1="10" y1="11" x2="9" y2="19" stroke="rgba(126,184,247,0.2)" strokeWidth="0.8"/>
-              <line x1="9" y1="19" x2="16" y2="14" stroke="rgba(126,184,247,0.2)" strokeWidth="0.8"/>
-              <line x1="16" y1="14" x2="14" y2="22" stroke="rgba(255,107,53,0.2)" strokeWidth="0.8"/>
-              <line x1="14" y1="22" x2="9" y2="19" stroke="rgba(255,107,53,0.2)" strokeWidth="0.8"/>
-              <line x1="22" y1="19" x2="14" y2="22" stroke="rgba(255,107,53,0.2)" strokeWidth="0.8"/>
-              <circle cx="16" cy="14" r="4.5" fill="#b088ff" opacity="0.08"/>
-              <circle cx="16" cy="14" r="3" fill="#b088ff" opacity="0.1"/>
-              <circle cx="16" cy="14" r="2.5" fill="#b088ff" opacity="0.95"/>
-              <circle cx="22" cy="10" r="1.8" fill="#b088ff" opacity="0.8"/>
-              <circle cx="22" cy="19" r="1.5" fill="#b088ff" opacity="0.7"/>
-              <circle cx="10" cy="11" r="1.8" fill="#7eb8f7" opacity="0.8"/>
-              <circle cx="9" cy="19" r="1.5" fill="#7eb8f7" opacity="0.7"/>
-              <circle cx="14" cy="22" r="1.5" fill="#ff6b35" opacity="0.7"/>
-              <circle cx="6" cy="7" r="1" fill="#50505e" opacity="0.45"/>
-              <circle cx="26" cy="6" r="0.9" fill="#50505e" opacity="0.35"/>
-              <circle cx="27" cy="24" r="0.9" fill="#ff6b35" opacity="0.3"/>
-            </svg>
+          <div className="fade-1" style={S.wordmark}>
+            {"DRIFT".split("").map((char, index) => (
+              <span
+                key={index}
+                className="drift-letter"
+                style={{ animationDelay: `${0.2 + index * 0.1}s` }}
+              >
+                {char}
+              </span>
+            ))}
           </div>
-          <div className="fade-1" style={S.wordmark}>DRIFT</div>
           <p className="fade-2" style={S.tagline}>A mirror that shows you who you are becoming.</p>
           <p className="fade-3" style={S.sub}>Your thoughts. Mapped. In vector space.</p>
           <div className="fade-4" style={S.ctaRow}>

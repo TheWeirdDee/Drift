@@ -1,28 +1,45 @@
-import openai
+import httpx
 import os
 import tempfile
 from dotenv import load_dotenv
 
 load_dotenv()
 
-client = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
+ASSEMBLYAI_KEY = os.getenv("ASSEMBLYAI_API_KEY", "")
 
 async def transcribe_audio(audio_bytes: bytes, filename: str = "recording.webm") -> str:
-    """Transcribe audio bytes using OpenAI Whisper API."""
-    with tempfile.NamedTemporaryFile(suffix=f".{filename.split('.')[-1]}", delete=False) as tmp:
-        tmp.write(audio_bytes)
-        tmp.flush()
-        tmp_path = tmp.name
-
-    try:
-        with open(tmp_path, "rb") as audio_file:
-            response = await client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file,
-                language="en"
+    if not ASSEMBLYAI_KEY:
+        raise Exception("ASSEMBLYAI_API_KEY not set in .env")
+    
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        # Upload audio
+        upload_res = await client.post(
+            "https://api.assemblyai.com/v2/upload",
+            headers={"authorization": ASSEMBLYAI_KEY},
+            content=audio_bytes
+        )
+        upload_url = upload_res.json()["upload_url"]
+        
+        # Request transcript
+        transcript_res = await client.post(
+            "https://api.assemblyai.com/v2/transcript",
+            headers={"authorization": ASSEMBLYAI_KEY},
+            json={"audio_url": upload_url}
+        )
+        transcript_id = transcript_res.json()["id"]
+        
+        # Poll until done
+        for _ in range(60):
+            import asyncio
+            await asyncio.sleep(2)
+            poll = await client.get(
+                f"https://api.assemblyai.com/v2/transcript/{transcript_id}",
+                headers={"authorization": ASSEMBLYAI_KEY}
             )
-        return response.text
-    finally:
-        import os as _os
-        _os.unlink(tmp_path)
+            result = poll.json()
+            if result["status"] == "completed":
+                return result["text"]
+            if result["status"] == "error":
+                raise Exception(f"Transcription failed: {result['error']}")
+        
+        raise Exception("Transcription timed out")

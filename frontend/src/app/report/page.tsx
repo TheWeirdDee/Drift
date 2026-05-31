@@ -114,7 +114,9 @@ export default function ReportPage() {
     <main style={{ minHeight: '100vh', background: '#050508', color: '#c8c8d4', fontFamily: sans, fontWeight: 300 }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&family=Outfit:wght@200;300;400&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        @media(min-width:641px){ * { cursor: none !important; } }
+        @media(max-width:640px){ #cr { display: none !important; } }
         body { -webkit-font-smoothing: antialiased; background: #050508; }
         ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-track { background: #050508; }
@@ -127,22 +129,45 @@ export default function ReportPage() {
         .card-in:nth-child(4) { animation-delay: 0.45s; }
         .btn-ghost:hover { border-color: rgba(176,136,255,0.4) !important; color: #c8c8d4 !important; }
         .btn-solid:hover { opacity: 0.85; }
+
+        .nav-container {
+          position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 1.5rem 3rem;
+          background: rgba(5,5,8,0.95);
+          border-bottom: 1px solid rgba(255,255,255,0.04);
+          backdrop-filter: blur(20px);
+          transition: padding 0.3s;
+        }
+        .nav-links a {
+          color: #b0b0c5 !important;
+          transition: color 0.2s;
+        }
+        .nav-links a:hover {
+          color: #ffffff !important;
+        }
+        @media (max-width: 640px) {
+          .nav-container {
+            padding: 1rem 1.5rem !important;
+          }
+          .nav-links {
+            gap: 0.75rem !important;
+          }
+          .nav-links a span {
+            font-size: 0.58rem !important;
+            letter-spacing: 0.12em !important;
+            padding: 6px 12px !important;
+          }
+        }
       `}</style>
 
       {/* Custom cursor */}
       <div id="cr" style={{ position: 'fixed', width: '8px', height: '8px', background: '#b088ff', borderRadius: '50%', pointerEvents: 'none', zIndex: 10000, transform: 'translate(-50%,-50%)', mixBlendMode: 'screen' }} />
 
       {/* Nav */}
-      <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '1.5rem 3rem',
-        background: 'rgba(5,5,8,0.95)',
-        borderBottom: '1px solid rgba(255,255,255,0.04)',
-        backdropFilter: 'blur(20px)',
-      }}>
+      <nav className="nav-container">
         <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" style={{ display: 'block' }}>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" style={{ display: 'block' }}>
             <rect width="32" height="32" fill="#050508" rx="6"/>
             <line x1="16" y1="14" x2="22" y2="10" stroke="rgba(176,136,255,0.3)" strokeWidth="0.8"/>
             <line x1="16" y1="14" x2="22" y2="19" stroke="rgba(176,136,255,0.3)" strokeWidth="0.8"/>
@@ -167,13 +192,13 @@ export default function ReportPage() {
           </svg>
           <span style={{ fontFamily: serif, fontSize: '1.4rem', fontWeight: 300, color: '#c8c8d4', letterSpacing: '0.1em' }}>DRIFT</span>
         </Link>
-        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+        <div className="nav-links" style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
           <Link href="/constellation" style={{ textDecoration: 'none' }}>
-            <span style={{ fontFamily: mono, fontSize: '0.65rem', color: '#50505e', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Constellation</span>
+            <span style={{ fontFamily: mono, fontSize: '0.65rem', color: 'inherit', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Constellation</span>
           </Link>
           <Link href="/journal" style={{ textDecoration: 'none' }}>
             <span style={{
-              fontFamily: mono, fontSize: '0.65rem', color: '#50505e',
+              fontFamily: mono, fontSize: '0.65rem', color: 'inherit',
               letterSpacing: '0.18em', textTransform: 'uppercase',
               border: '1px solid #1a1a2e', padding: '8px 16px',
             }}>+ New entry</span>

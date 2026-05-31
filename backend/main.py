@@ -93,25 +93,25 @@ async def list_entries():
     return entries
 
 
-@app.get("/entries/{entry_id}/similar", response_model=SimilarEntriesResponse)
+@app.get("/entries/{entry_id}/similar")
 async def get_similar_entries(entry_id: str, limit: int = 5):
-    """Find the most similar entries to a given entry."""
-    all_entries = await get_all_entries()
-    target = next((e for e in all_entries if e["id"] == entry_id), None)
-
-    if not target:
-        raise HTTPException(status_code=404, detail="Entry not found")
-
-    similar = await search_similar(
-        vector=target["vector"],
-        limit=limit + 1,
-        exclude_id=entry_id
-    )
-
-    return SimilarEntriesResponse(
-        source_id=entry_id,
-        similar=similar[:limit]
-    )
+    import traceback
+    try:
+        all_entries = await get_all_entries()
+        target = next((e for e in all_entries if e["id"] == entry_id), None)
+        if not target:
+            raise HTTPException(status_code=404, detail=f"Entry {entry_id} not found in {len(all_entries)} entries")
+        similar = await search_similar(
+            vector=target["vector"],
+            limit=limit + 1,
+            exclude_id=entry_id
+        )
+        return {"source_id": entry_id, "similar": similar[:limit]}
+    except HTTPException:
+        raise
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/entries/batch")

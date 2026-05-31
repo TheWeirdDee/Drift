@@ -77,7 +77,7 @@ function EntryPanel({ entry, similar, onClose, onFindSimilar, loading }: {
   entry: Entry; similar: any[]; onClose: () => void; onFindSimilar: () => void; loading: boolean
 }) {
   return (
-    <div style={{ position:'absolute',right:0,top:0,bottom:0,width:'min(340px,90vw)',background:'rgba(8,8,15,0.99)',borderLeft:'1px solid rgba(176,136,255,0.08)',display:'flex',flexDirection:'column',fontFamily:sans,zIndex:50,overflowY:'auto' }}>
+    <div className="entry-panel" style={{ position:'absolute',right:0,top:0,bottom:0,width:'min(340px,90vw)',background:'rgba(8,8,15,0.99)',borderLeft:'1px solid rgba(176,136,255,0.08)',display:'flex',flexDirection:'column',fontFamily:sans,zIndex:50,overflowY:'auto' }}>
       <div style={{ padding:'1.25rem 1.5rem',borderBottom:'1px solid rgba(255,255,255,0.04)',display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:'1rem' }}>
         <div style={{ minWidth:0 }}>
           <p style={{ fontSize:'0.6rem',letterSpacing:'0.18em',color:'#3a2260',fontFamily:mono,textTransform:'uppercase',marginBottom:'0.3rem' }}>
@@ -237,6 +237,10 @@ export default function ConstellationPage() {
     const onUp=()=>{dragging=false}
     const onWheel=(e:WheelEvent)=>{radius=Math.max(4,Math.min(28,radius+e.deltaY*.012))}
 
+    const onTouchStart=(e:TouchEvent)=>{if(e.touches.length===1){dragging=true;px=e.touches[0].clientX;py=e.touches[0].clientY}}
+    const onTouchMove=(e:TouchEvent)=>{if(!dragging||e.touches.length!==1)return;theta-=(e.touches[0].clientX-px)*.005;phi=Math.max(.3,Math.min(Math.PI-.3,phi-(e.touches[0].clientY-py)*.005));px=e.touches[0].clientX;py=e.touches[0].clientY}
+    const onTouchEnd=()=>{dragging=false}
+
     const ray=new THREE.Raycaster(); const ptr=new THREE.Vector2()
     const onClick=(e:MouseEvent)=>{
       ptr.x=(e.clientX/window.innerWidth)*2-1; ptr.y=-(e.clientY/window.innerHeight)*2+1
@@ -245,11 +249,16 @@ export default function ConstellationPage() {
       if(hits.length>0){
         const id=hits[0].object.userData.id
         const entry=entries.find(en=>en.id===id)
-        if(entry){setSelected(entry);setSimilar([]);setSimilarIds([])}
+        if(entry){
+          setSelected(entry)
+          setSimilar([])
+          setSimilarIds([])
+        }
       }
     }
-    canvas.addEventListener('mousedown',onDown); canvas.addEventListener('mousemove',onMove)
-    canvas.addEventListener('mouseup',onUp); canvas.addEventListener('wheel',onWheel); canvas.addEventListener('click',onClick)
+    canvas.addEventListener('mousedown',onDown); window.addEventListener('mousemove',onMove); window.addEventListener('mouseup',onUp)
+    canvas.addEventListener('touchstart',onTouchStart); window.addEventListener('touchmove',onTouchMove); window.addEventListener('touchend',onTouchEnd)
+    canvas.addEventListener('wheel',onWheel); canvas.addEventListener('click',onClick)
     sceneRef.current={scene,camera,meshes,entries,lines:null}
 
     let animId:number
@@ -264,7 +273,19 @@ export default function ConstellationPage() {
     animate()
     const onResize=()=>{camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight)}
     window.addEventListener('resize',onResize)
-    return()=>{cancelAnimationFrame(animId);canvas.removeEventListener('mousedown',onDown);canvas.removeEventListener('mousemove',onMove);canvas.removeEventListener('mouseup',onUp);canvas.removeEventListener('wheel',onWheel);canvas.removeEventListener('click',onClick);window.removeEventListener('resize',onResize);renderer.dispose()}
+    return()=>{
+      cancelAnimationFrame(animId);
+      canvas.removeEventListener('mousedown',onDown);
+      window.removeEventListener('mousemove',onMove);
+      window.removeEventListener('mouseup',onUp);
+      canvas.removeEventListener('touchstart',onTouchStart);
+      window.removeEventListener('touchmove',onTouchMove);
+      window.removeEventListener('touchend',onTouchEnd);
+      canvas.removeEventListener('wheel',onWheel);
+      canvas.removeEventListener('click',onClick);
+      window.removeEventListener('resize',onResize);
+      renderer.dispose();
+    }
   },[entries])
 
   // Timeline filter visibility
@@ -319,31 +340,75 @@ export default function ConstellationPage() {
     <div style={{width:'100vw',height:'100vh',background:'#050508',overflow:'hidden',position:'relative'}}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=DM+Mono:wght@300;400&family=Outfit:wght@300;400&display=swap');
-        *{cursor:none!important;box-sizing:border-box;margin:0;padding:0;}
+        *{box-sizing:border-box;margin:0;padding:0;}
+        @media(min-width:641px){ *{cursor:none!important;} }
+        @media(max-width:640px){ #crc{display:none!important;} }
         a{text-decoration:none;color:inherit;}
-        .nav-btn{background:none;border:1px solid #1a1a2e;color:#50505e;fontFamily:${mono};font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;padding:6px 12px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
-        .nav-btn:hover{border-color:rgba(176,136,255,0.3);color:#c8c8d4;}
-        .nav-link{font-family:${mono};font-size:0.6rem;color:#50505e;letter-spacing:0.15em;text-transform:uppercase;white-space:nowrap;}
-        .nav-link:hover{color:#c8c8d4;}
+        .nav-btn{background:none;border:1px solid #1a1a2e;color:#b0b0c5;fontFamily:${mono};font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;padding:6px 12px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+        .nav-btn:hover{border-color:rgba(176,136,255,0.3);color:#ffffff;}
+        .nav-link{font-family:${mono};font-size:0.6rem;color:#b0b0c5;letter-spacing:0.15em;text-transform:uppercase;white-space:nowrap;}
+        .nav-link:hover{color:#ffffff;}
         .hamburger{background:none;border:none;color:#50505e;font-size:1.2rem;cursor:pointer;padding:4px 8px;}
         @keyframes spin{to{transform:rotate(360deg)}}
         @media(max-width:640px){.desktop-nav{display:none!important}.mobile-menu-btn{display:flex!important}}
         @media(min-width:641px){.mobile-menu-btn{display:none!important}.mobile-dropdown{display:none!important}}
         @media(max-width:640px){ .timeline-wrap{ bottom: 1rem !important; left: 1rem !important; right: 1rem !important; transform: none !important; width: auto !important; } }
+        @media(max-width:640px){
+          .entry-panel{
+            position:fixed!important;
+            right:0!important;
+            left:0!important;
+            top:auto!important;
+            bottom:0!important;
+            width:100%!important;
+            max-height:45vh!important;
+            border-left:none!important;
+            border-top:1px solid rgba(176,136,255,0.1)!important;
+            border-radius:12px 12px 0 0!important;
+          }
+        }
+        @media(max-width:640px){
+          .nav-container{
+            padding: 1rem 1.5rem!important;
+          }
+        }
       `}</style>
 
       {/* Cursor */}
       <div id="crc" style={{position:'fixed',width:'8px',height:'8px',background:'#b088ff',borderRadius:'50%',pointerEvents:'none',zIndex:9999,transform:'translate(-50%,-50%)',mixBlendMode:'screen' as any}}/>
 
       {/* Nav */}
-      <nav style={{position:'absolute',top:0,left:0,right:0,zIndex:40,display:'flex',justifyContent:'space-between',alignItems:'center',padding:'1.25rem 2rem',gap:'1rem'}}>
-        <Link href="/">
+      <nav className="nav-container" style={{position:'absolute',top:0,left:0,right:0,zIndex:40,display:'flex',justifyContent:'space-between',alignItems:'center',padding:'1.25rem 2rem',gap:'1rem'}}>
+        <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" style={{ display: 'block' }}>
+            <rect width="32" height="32" fill="#050508" rx="6"/>
+            <line x1="16" y1="14" x2="22" y2="10" stroke="rgba(176,136,255,0.3)" strokeWidth="0.8"/>
+            <line x1="16" y1="14" x2="22" y2="19" stroke="rgba(176,136,255,0.3)" strokeWidth="0.8"/>
+            <line x1="16" y1="14" x2="10" y2="11" stroke="rgba(126,184,247,0.3)" strokeWidth="0.8"/>
+            <line x1="22" y1="10" x2="22" y2="19" stroke="rgba(176,136,255,0.2)" strokeWidth="0.8"/>
+            <line x1="10" y1="11" x2="9" y2="19" stroke="rgba(126,184,247,0.2)" strokeWidth="0.8"/>
+            <line x1="9" y1="19" x2="16" y2="14" stroke="rgba(126,184,247,0.2)" strokeWidth="0.8"/>
+            <line x1="16" y1="14" x2="14" y2="22" stroke="rgba(255,107,53,0.2)" strokeWidth="0.8"/>
+            <line x1="14" y1="22" x2="9" y2="19" stroke="rgba(255,107,53,0.2)" strokeWidth="0.8"/>
+            <line x1="22" y1="19" x2="14" y2="22" stroke="rgba(255,107,53,0.2)" strokeWidth="0.8"/>
+            <circle cx="16" cy="14" r="4.5" fill="#b088ff" opacity="0.08"/>
+            <circle cx="16" cy="14" r="3" fill="#b088ff" opacity="0.1"/>
+            <circle cx="16" cy="14" r="2.5" fill="#b088ff" opacity="0.95"/>
+            <circle cx="22" cy="10" r="1.8" fill="#b088ff" opacity="0.8"/>
+            <circle cx="22" cy="19" r="1.5" fill="#b088ff" opacity="0.7"/>
+            <circle cx="10" cy="11" r="1.8" fill="#7eb8f7" opacity="0.8"/>
+            <circle cx="9" cy="19" r="1.5" fill="#7eb8f7" opacity="0.7"/>
+            <circle cx="14" cy="22" r="1.5" fill="#ff6b35" opacity="0.7"/>
+            <circle cx="6" cy="7" r="1" fill="#50505e" opacity="0.45"/>
+            <circle cx="26" cy="6" r="0.9" fill="#50505e" opacity="0.35"/>
+            <circle cx="27" cy="24" r="0.9" fill="#ff6b35" opacity="0.3"/>
+          </svg>
           <span style={{fontFamily:serif,fontSize:'1.3rem',fontWeight:300,color:'#c8c8d4',letterSpacing:'0.1em'}}>DRIFT</span>
         </Link>
 
         {/* Desktop nav */}
         <div className="desktop-nav" style={{display:'flex',gap:'1rem',alignItems:'center',flexWrap:'wrap',justifyContent:'flex-end'}}>
-          <span style={{fontFamily:mono,fontSize:'0.58rem',color:'#3a3a48',letterSpacing:'0.1em'}}>{visibleCount} of {entries.length} entries</span>
+          <span style={{fontFamily:mono,fontSize:'0.58rem',color:'#808092',letterSpacing:'0.1em'}}>{visibleCount} of {entries.length} entries</span>
           <button onClick={()=>setShowGuide(true)} className="nav-btn">? Guide</button>
           <Link href="/report"><span className="nav-link">Weekly Report</span></Link>
           <Link href="/journal"><span className="nav-btn" style={{display:'inline-block'}}>+ New Entry</span></Link>
@@ -383,7 +448,7 @@ export default function ConstellationPage() {
 
       {selected&&(
         <EntryPanel entry={selected} similar={similar}
-          onClose={()=>{setSelected(null);setSimilar([]);setSimilarIds([])}}
+          onClose={()=>{setSelected(null)}}
           onFindSimilar={handleSimilar} loading={loadingSim}
         />
       )}

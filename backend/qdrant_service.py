@@ -1,8 +1,7 @@
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.models import (
     Distance, VectorParams, PointStruct,
-    Filter, FieldCondition, MatchValue,
-    ScoredPoint
+    Filter, FieldCondition, MatchValue
 )
 import os
 from dotenv import load_dotenv
@@ -94,12 +93,13 @@ async def search_similar(
     """Find nearest neighbors in vector space."""
     client = get_client()
 
-    results: list[ScoredPoint] = await client.search(
+    response = await client.query_points(
         collection_name=COLLECTION_NAME,
-        query_vector=vector,
+        query=vector,
         limit=limit + (1 if exclude_id else 0),
         with_payload=True
     )
+    results = response.points
 
     output = []
     for r in results:
