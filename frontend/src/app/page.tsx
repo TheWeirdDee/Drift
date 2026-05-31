@@ -437,8 +437,85 @@ export default function Home() {
 
       <main style={S.page}>
 
+        {/* Nav */}
+        <nav style={{
+          position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '1.5rem 3rem',
+          background: 'rgba(5,5,8,0.35)',
+          borderBottom: '1px solid rgba(255,255,255,0.02)',
+          backdropFilter: 'blur(20px)',
+        }}>
+          <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" style={{ display: 'block' }}>
+              <rect width="32" height="32" fill="#050508" rx="6"/>
+              <line x1="16" y1="14" x2="22" y2="10" stroke="rgba(176,136,255,0.3)" strokeWidth="0.8"/>
+              <line x1="16" y1="14" x2="22" y2="19" stroke="rgba(176,136,255,0.3)" strokeWidth="0.8"/>
+              <line x1="16" y1="14" x2="10" y2="11" stroke="rgba(126,184,247,0.3)" strokeWidth="0.8"/>
+              <line x1="22" y1="10" x2="22" y2="19" stroke="rgba(176,136,255,0.2)" strokeWidth="0.8"/>
+              <line x1="10" y1="11" x2="9" y2="19" stroke="rgba(126,184,247,0.2)" strokeWidth="0.8"/>
+              <line x1="9" y1="19" x2="16" y2="14" stroke="rgba(126,184,247,0.2)" strokeWidth="0.8"/>
+              <line x1="16" y1="14" x2="14" y2="22" stroke="rgba(255,107,53,0.2)" stroke-width="0.8"/>
+              <line x1="14" y1="22" x2="9" y2="19" stroke="rgba(255,107,53,0.2)" stroke-width="0.8"/>
+              <line x1="22" y1="19" x2="14" y2="22" stroke="rgba(255,107,53,0.2)" stroke-width="0.8"/>
+              <circle cx="16" cy="14" r="4.5" fill="#b088ff" opacity="0.08"/>
+              <circle cx="16" cy="14" r="3" fill="#b088ff" opacity="0.1"/>
+              <circle cx="16" cy="14" r="2.5" fill="#b088ff" opacity="0.95"/>
+              <circle cx="22" cy="10" r="1.8" fill="#b088ff" opacity="0.8"/>
+              <circle cx="22" cy="19" r="1.5" fill="#b088ff" opacity="0.7"/>
+              <circle cx="10" cy="11" r="1.8" fill="#7eb8f7" opacity="0.8"/>
+              <circle cx="9" cy="19" r="1.5" fill="#7eb8f7" opacity="0.7"/>
+              <circle cx="14" cy="22" r="1.5" fill="#ff6b35" opacity="0.7"/>
+              <circle cx="6" cy="7" r="1" fill="#50505e" opacity="0.45"/>
+              <circle cx="26" cy="6" r="0.9" fill="#50505e" opacity="0.35"/>
+              <circle cx="27" cy="24" r="0.9" fill="#ff6b35" opacity="0.3"/>
+            </svg>
+            <span style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: '1.4rem', fontWeight: 300, color: '#c8c8d4', letterSpacing: '0.1em' }}>DRIFT</span>
+          </Link>
+          <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+            <Link href="/constellation" style={{ textDecoration: 'none' }}>
+              <span style={{ fontFamily: '"DM Mono", monospace', fontSize: '0.65rem', color: '#50505e', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Constellation</span>
+            </Link>
+            <Link href="/report" style={{ textDecoration: 'none' }}>
+              <span style={{ fontFamily: '"DM Mono", monospace', fontSize: '0.65rem', color: '#50505e', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Weekly Report</span>
+            </Link>
+            <Link href="/journal" style={{ textDecoration: 'none' }}>
+              <span style={{
+                fontFamily: '"DM Mono", monospace', fontSize: '0.65rem', color: '#50505e',
+                letterSpacing: '0.18em', textTransform: 'uppercase',
+                border: '1px solid #1a1a2e', padding: '8px 16px',
+              }}>+ New Entry</span>
+            </Link>
+          </div>
+        </nav>
+
         {/* ── HERO ── */}
         <section style={S.hero}>
+          <div className="fade-1" style={{ marginBottom: '1.5rem' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="80" height="80" style={{ display: 'block', margin: '0 auto' }}>
+              <rect width="32" height="32" fill="#050508" rx="6"/>
+              <line x1="16" y1="14" x2="22" y2="10" stroke="rgba(176,136,255,0.3)" strokeWidth="0.8"/>
+              <line x1="16" y1="14" x2="22" y2="19" stroke="rgba(176,136,255,0.3)" strokeWidth="0.8"/>
+              <line x1="16" y1="14" x2="10" y2="11" stroke="rgba(126,184,247,0.3)" strokeWidth="0.8"/>
+              <line x1="22" y1="10" x2="22" y2="19" stroke="rgba(176,136,255,0.2)" strokeWidth="0.8"/>
+              <line x1="10" y1="11" x2="9" y2="19" stroke="rgba(126,184,247,0.2)" strokeWidth="0.8"/>
+              <line x1="9" y1="19" x2="16" y2="14" stroke="rgba(126,184,247,0.2)" strokeWidth="0.8"/>
+              <line x1="16" y1="14" x2="14" y2="22" stroke="rgba(255,107,53,0.2)" strokeWidth="0.8"/>
+              <line x1="14" y1="22" x2="9" y2="19" stroke="rgba(255,107,53,0.2)" stroke-width="0.8"/>
+              <line x1="22" y1="19" x2="14" y2="22" stroke="rgba(255,107,53,0.2)" stroke-width="0.8"/>
+              <circle cx="16" cy="14" r="4.5" fill="#b088ff" opacity="0.08"/>
+              <circle cx="16" cy="14" r="3" fill="#b088ff" opacity="0.1"/>
+              <circle cx="16" cy="14" r="2.5" fill="#b088ff" opacity="0.95"/>
+              <circle cx="22" cy="10" r="1.8" fill="#b088ff" opacity="0.8"/>
+              <circle cx="22" cy="19" r="1.5" fill="#b088ff" opacity="0.7"/>
+              <circle cx="10" cy="11" r="1.8" fill="#7eb8f7" opacity="0.8"/>
+              <circle cx="9" cy="19" r="1.5" fill="#7eb8f7" opacity="0.7"/>
+              <circle cx="14" cy="22" r="1.5" fill="#ff6b35" opacity="0.7"/>
+              <circle cx="6" cy="7" r="1" fill="#50505e" opacity="0.45"/>
+              <circle cx="26" cy="6" r="0.9" fill="#50505e" opacity="0.35"/>
+              <circle cx="27" cy="24" r="0.9" fill="#ff6b35" opacity="0.3"/>
+            </svg>
+          </div>
           <div className="fade-1" style={S.wordmark}>DRIFT</div>
           <p className="fade-2" style={S.tagline}>A mirror that shows you who you are becoming.</p>
           <p className="fade-3" style={S.sub}>Your thoughts. Mapped. In vector space.</p>
