@@ -86,7 +86,7 @@ export default function JournalPage() {
         ::-webkit-scrollbar-thumb { background: #3a2260; }
         a { text-decoration: none; color: inherit; }
         textarea:focus, input:focus { outline: none; border-color: rgba(176,136,255,0.3) !important; }
-        textarea::placeholder, input::placeholder { color: #3a3a48; }
+        textarea::placeholder, input::placeholder { color: #50506e; }
         .mode-btn { background: none; border: none; padding: 0 0 8px 0; cursor: pointer; transition: color 0.2s; }
         .mode-btn:hover { color: #c8c8d4 !important; }
         .submit-btn:hover:not(:disabled) { opacity: 0.85; }
@@ -174,7 +174,7 @@ export default function JournalPage() {
 
         {/* Header */}
         <div style={{ marginBottom: '3rem' }}>
-          <p style={{ fontFamily: mono, fontSize: '0.65rem', letterSpacing: '0.25em', color: '#3a2260', textTransform: 'uppercase', marginBottom: '1rem' }}>
+          <p style={{ fontFamily: mono, fontSize: '0.65rem', letterSpacing: '0.25em', color: '#b088ff', textTransform: 'uppercase', marginBottom: '1rem' }}>
             New entry
           </p>
           <h1 style={{ fontFamily: serif, fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 300, color: '#c8c8d4' }}>
@@ -188,7 +188,7 @@ export default function JournalPage() {
             <button key={m} className="mode-btn" onClick={() => setMode(m)} style={{
               fontFamily: mono, fontSize: '0.7rem', letterSpacing: '0.18em',
               textTransform: 'uppercase',
-              color: mode === m ? '#c8c8d4' : '#50505e',
+              color: mode === m ? '#c8c8d4' : '#808092',
               borderBottom: mode === m ? '1px solid #b088ff' : '1px solid transparent',
               paddingBottom: '10px',
             }}>
@@ -225,7 +225,7 @@ export default function JournalPage() {
               }}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.25rem' }}>
-              <span style={{ fontFamily: mono, fontSize: '0.65rem', color: '#3a3a48', letterSpacing: '0.1em' }}>
+              <span style={{ fontFamily: mono, fontSize: '0.65rem', color: '#808092', letterSpacing: '0.1em' }}>
                 {text.length} chars
               </span>
               <button
@@ -250,17 +250,17 @@ export default function JournalPage() {
           <div className="fade-in" style={{ textAlign: 'center', padding: '4rem 0' }}>
             {status === 'idle' && (
               <>
-                <p style={{ color: '#50505e', fontWeight: 300, lineHeight: 1.9, marginBottom: '3rem', fontSize: '0.9rem' }}>
+                <p style={{ color: '#808092', fontWeight: 300, lineHeight: 1.9, marginBottom: '3rem', fontSize: '0.9rem' }}>
                   Press and speak. Your voice will be transcribed<br />and embedded into the constellation.
                 </p>
                 <button onClick={startRecording} className="record-btn" style={{
                   width: '88px', height: '88px', borderRadius: '50%',
-                  border: '1px solid #50505e', background: 'none',
+                  border: '1px solid #808092', background: 'none',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   margin: '0 auto 1.5rem', fontSize: '2rem', cursor: 'pointer',
                   transition: 'border-color 0.2s',
                 }}>◉</button>
-                <p style={{ fontFamily: mono, fontSize: '0.65rem', color: '#3a3a48', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+                <p style={{ fontFamily: mono, fontSize: '0.65rem', color: '#808092', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
                   Press to record
                 </p>
               </>
@@ -276,13 +276,13 @@ export default function JournalPage() {
                   <div style={{ width: '22px', height: '22px', background: '#ff6b35', borderRadius: '3px', animation: 'pulse 1s ease-in-out infinite' }} />
                 </button>
                 <p style={{ fontFamily: mono, fontSize: '1.5rem', color: '#ff6b35', marginBottom: '0.5rem' }}>{fmt(recordingTime)}</p>
-                <p style={{ fontFamily: mono, fontSize: '0.65rem', color: '#50505e', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Press to stop</p>
+                <p style={{ fontFamily: mono, fontSize: '0.65rem', color: '#808092', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Press to stop</p>
               </>
             )}
             {status === 'processing' && (
               <>
-                <div style={{ width: '48px', height: '48px', border: '1px solid #3a2260', borderTopColor: '#b088ff', borderRadius: '50%', animation: 'spin 2s linear infinite', margin: '0 auto 1.5rem' }} />
-                <p style={{ color: '#50505e', fontWeight: 300 }}>Transcribing and embedding...</p>
+                <div style={{ width: '48px', height: '48px', border: '1px solid #50506e', borderTopColor: '#b088ff', borderRadius: '50%', animation: 'spin 2s linear infinite', margin: '0 auto 1.5rem' }} />
+                <p style={{ color: '#808092', fontWeight: 300 }}>Transcribing and embedding...</p>
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
               </>
             )}
@@ -303,20 +303,20 @@ export default function JournalPage() {
               </p>
               <button onClick={() => setStatus('idle')} style={{
                 background: 'none', border: 'none', fontFamily: mono,
-                fontSize: '0.65rem', color: '#50505e', cursor: 'pointer', letterSpacing: '0.1em',
+                fontSize: '0.65rem', color: '#808092', cursor: 'pointer', letterSpacing: '0.1em',
               }}>+ New entry</button>
             </div>
             <p style={{ color: '#c8c8d4', fontWeight: 300, lineHeight: 1.8, fontSize: '0.9rem', marginBottom: '1rem' }}>
               {lastEntry.text?.slice(0, 200)}{lastEntry.text?.length > 200 ? '...' : ''}
             </p>
-            <p style={{ fontFamily: mono, fontSize: '0.6rem', color: '#3a3a48', marginBottom: '1.25rem', letterSpacing: '0.08em' }}>
+            <p style={{ fontFamily: mono, fontSize: '0.6rem', color: '#808092', marginBottom: '1.25rem', letterSpacing: '0.08em' }}>
               Vector: [{lastEntry.vector_preview?.map((v: number) => v.toFixed(3)).join(', ')}...]
             </p>
             <Link href="/constellation" style={{ textDecoration: 'none' }}>
               <span style={{
                 fontFamily: mono, fontSize: '0.65rem', letterSpacing: '0.15em',
                 textTransform: 'uppercase', border: '1px solid #1a1a2e',
-                color: '#50505e', padding: '8px 16px', display: 'inline-block',
+                color: '#808092', padding: '8px 16px', display: 'inline-block',
               }}>See it in the constellation →</span>
             </Link>
           </div>

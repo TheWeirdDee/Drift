@@ -43,10 +43,10 @@ function LoadingState() {
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '2rem' }}>
       <div style={{
         width: '48px', height: '48px',
-        border: '1px solid #3a2260', borderTopColor: '#b088ff',
+        border: '1px solid #50506e', borderTopColor: '#b088ff',
         borderRadius: '50%', animation: 'spin 2s linear infinite'
       }} />
-      <p style={{ fontFamily: mono, fontSize: '0.75rem', color: '#50505e', letterSpacing: '0.15em', textAlign: 'center' }}>
+      <p style={{ fontFamily: mono, fontSize: '0.75rem', color: '#808092', letterSpacing: '0.15em', textAlign: 'center' }}>
         {STEPS[step]}
       </p>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -79,7 +79,7 @@ function Excerpt({ text, timestamp }: { text: string; timestamp?: string }) {
         "{text.slice(0, 300)}{text.length > 300 ? '...' : ''}"
       </p>
       {timestamp && (
-        <p style={{ fontFamily: mono, fontSize: '0.65rem', color: '#3a3a48', marginTop: '0.75rem', letterSpacing: '0.1em' }}>
+        <p style={{ fontFamily: mono, fontSize: '0.65rem', color: '#808092', marginTop: '0.75rem', letterSpacing: '0.1em' }}>
           {timeAgo(timestamp)}
         </p>
       )}
@@ -211,12 +211,12 @@ export default function ReportPage() {
 
         {/* Header */}
         <div style={{ marginBottom: '4rem' }}>
-          <p style={{ fontFamily: mono, fontSize: '0.65rem', letterSpacing: '0.25em', color: '#3a2260', textTransform: 'uppercase', marginBottom: '1.5rem' }}>
+          <p style={{ fontFamily: mono, fontSize: '0.65rem', letterSpacing: '0.25em', color: '#b088ff', textTransform: 'uppercase', marginBottom: '1.5rem' }}>
             Weekly drift report
           </p>
           <h1 style={{ fontFamily: serif, fontSize: 'clamp(2.2rem, 5vw, 3.5rem)', fontWeight: 300, lineHeight: 1.25, color: '#c8c8d4' }}>
             What your mind has<br />
-            <span style={{ fontStyle: 'italic', color: '#50505e' }}>been doing this week.</span>
+            <span style={{ fontStyle: 'italic', color: '#808092' }}>been doing this week.</span>
           </h1>
         </div>
 
@@ -230,11 +230,11 @@ export default function ReportPage() {
             border: '1px solid rgba(255,255,255,0.05)',
             padding: '3rem', textAlign: 'center', borderRadius: '2px',
           }}>
-            <p style={{ color: '#50505e', fontWeight: 300, marginBottom: '2rem', lineHeight: 1.7 }}>{error}</p>
+            <p style={{ color: '#808092', fontWeight: 300, marginBottom: '2rem', lineHeight: 1.7 }}>{error}</p>
             <Link href="/journal" style={{ textDecoration: 'none' }}>
               <span style={{
                 fontFamily: mono, fontSize: '0.65rem', letterSpacing: '0.18em', textTransform: 'uppercase',
-                border: '1px solid #50505e', color: '#50505e', padding: '10px 24px', display: 'inline-block',
+                border: '1px solid #808092', color: '#808092', padding: '10px 24px', display: 'inline-block',
               }}>Write an entry →</span>
             </Link>
           </div>
@@ -243,7 +243,7 @@ export default function ReportPage() {
         {/* Report */}
         {!loading && report && (
           <div>
-            <p style={{ fontFamily: mono, fontSize: '0.65rem', color: '#3a3a48', letterSpacing: '0.1em', marginBottom: '2.5rem' }}>
+            <p style={{ fontFamily: mono, fontSize: '0.65rem', color: '#808092', letterSpacing: '0.1em', marginBottom: '2.5rem' }}>
               Based on {report.week_entry_count} entries · Generated {formatGenerated(report.generated_at)}
             </p>
 
@@ -252,17 +252,17 @@ export default function ReportPage() {
                 <p style={{ fontFamily: serif, fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontStyle: 'italic', fontWeight: 300, color: '#c8c8d4', lineHeight: 1.3, marginBottom: '1rem' }}>
                   {report.center_of_gravity.theme}
                 </p>
-                <p style={{ color: '#50505e', fontSize: '0.85rem', lineHeight: 1.8, marginBottom: '1.5rem' }}>
+                <p style={{ color: '#808092', fontSize: '0.85rem', lineHeight: 1.8, marginBottom: '1.5rem' }}>
                   This is what your thoughts orbited this week — not what you wrote about, but the gravitational center underneath all of it.
                 </p>
                 {report.center_of_gravity.sample_entries.length > 0 && (
                   <div>
-                    <p style={{ fontFamily: mono, fontSize: '0.6rem', letterSpacing: '0.2em', color: '#3a3a48', textTransform: 'uppercase', marginBottom: '1rem' }}>
+                    <p style={{ fontFamily: mono, fontSize: '0.6rem', letterSpacing: '0.2em', color: '#808092', textTransform: 'uppercase', marginBottom: '1rem' }}>
                       Entries that shaped it
                     </p>
                     {report.center_of_gravity.sample_entries.slice(0, 2).map((e, i) => (
                       <div key={i} style={{ borderLeft: '2px solid rgba(176,136,255,0.1)', paddingLeft: '1rem', marginBottom: '0.75rem' }}>
-                        {e.title && <p style={{ fontFamily: mono, fontSize: '0.65rem', color: '#3a2260', marginBottom: '0.3rem' }}>{e.title}</p>}
+                        {e.title && <p style={{ fontFamily: mono, fontSize: '0.65rem', color: '#b088ff', marginBottom: '0.3rem' }}>{e.title}</p>}
                         <p style={{ color: '#c8c8d4', fontSize: '0.85rem', lineHeight: 1.7 }}>{e.text}</p>
                       </div>
                     ))}
@@ -273,7 +273,7 @@ export default function ReportPage() {
 
             <div className="card-in">
               <Card accent="#ff6b35" label="02 — Furthest drift">
-                <p style={{ color: '#50505e', fontSize: '0.85rem', lineHeight: 1.8 }}>
+                <p style={{ color: '#808092', fontSize: '0.85rem', lineHeight: 1.8 }}>
                   {report.furthest_drift.insight}
                 </p>
                 <Excerpt text={report.furthest_drift.text} timestamp={report.furthest_drift.timestamp} />
@@ -286,7 +286,7 @@ export default function ReportPage() {
                   <p style={{ fontFamily: serif, fontSize: '1.2rem', fontStyle: 'italic', fontWeight: 300, color: '#c8c8d4', lineHeight: 1.6, marginBottom: '0.75rem' }}>
                     {report.echo.insight}
                   </p>
-                  <p style={{ fontFamily: mono, fontSize: '0.65rem', color: '#3a3a48', letterSpacing: '0.1em', marginBottom: '1rem' }}>
+                  <p style={{ fontFamily: mono, fontSize: '0.65rem', color: '#808092', letterSpacing: '0.1em', marginBottom: '1rem' }}>
                     {report.echo.days_ago} days ago
                   </p>
                   <Excerpt text={report.echo.text} timestamp={report.echo.timestamp} />
@@ -302,7 +302,7 @@ export default function ReportPage() {
               <Link href="/constellation" style={{ flex: 1, minWidth: '200px', textDecoration: 'none' }}>
                 <div className="btn-ghost" style={{
                   textAlign: 'center', padding: '1rem',
-                  border: '1px solid rgba(255,255,255,0.08)', color: '#50505e',
+                  border: '1px solid rgba(255,255,255,0.08)', color: '#808092',
                   fontFamily: mono, fontSize: '0.65rem', letterSpacing: '0.18em', textTransform: 'uppercase',
                   transition: 'all 0.2s',
                 }}>

@@ -401,6 +401,13 @@ export default function Home() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         @media(min-width:641px){ * { cursor: none !important; } }
         @media(max-width:640px){ .custom-cursor { display: none !important; } }
+        @media (max-width: 640px) {
+          .hero-wordmark {
+            font-size: clamp(3rem, 12vw, 5rem) !important;
+            letter-spacing: 0.25em !important;
+            padding-left: 0.25em !important;
+          }
+        }
         html { background: #050508; scroll-behavior: smooth; }
         body { -webkit-font-smoothing: antialiased; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 3px; }
@@ -526,7 +533,7 @@ export default function Home() {
 
         {/* ── HERO ── */}
         <section style={S.hero}>
-          <div className="fade-1" style={S.wordmark}>
+          <div className="fade-1 hero-wordmark" style={S.wordmark}>
             {"DRIFT".split("").map((char, index) => (
               <span
                 key={index}

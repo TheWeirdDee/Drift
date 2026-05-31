@@ -80,27 +80,27 @@ function EntryPanel({ entry, similar, onClose, onFindSimilar, loading }: {
     <div className="entry-panel" style={{ position:'absolute',right:0,top:0,bottom:0,width:'min(340px,90vw)',background:'rgba(8,8,15,0.99)',borderLeft:'1px solid rgba(176,136,255,0.08)',display:'flex',flexDirection:'column',fontFamily:sans,zIndex:50,overflowY:'auto' }}>
       <div style={{ padding:'1.25rem 1.5rem',borderBottom:'1px solid rgba(255,255,255,0.04)',display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:'1rem' }}>
         <div style={{ minWidth:0 }}>
-          <p style={{ fontSize:'0.6rem',letterSpacing:'0.18em',color:'#3a2260',fontFamily:mono,textTransform:'uppercase',marginBottom:'0.3rem' }}>
+          <p style={{ fontSize:'0.6rem',letterSpacing:'0.18em',color:'#b088ff',fontFamily:mono,textTransform:'uppercase',marginBottom:'0.3rem' }}>
             {entry.source==='voice'?'◉ Voice':'⌨ Text'} · {timeAgo(entry.timestamp)}
           </p>
           {entry.title && <p style={{ color:'#c8c8d4',fontFamily:serif,fontSize:'1rem',fontWeight:300,wordBreak:'break-word' }}>{entry.title}</p>}
         </div>
-        <button onClick={onClose} style={{ background:'none',border:'none',color:'#50505e',fontSize:'1.1rem',cursor:'pointer',lineHeight:1,flexShrink:0 }}>✕</button>
+        <button onClick={onClose} style={{ background:'none',border:'none',color:'#a0a0b5',fontSize:'1.1rem',cursor:'pointer',lineHeight:1,flexShrink:0 }}>✕</button>
       </div>
       <div style={{ flex:1,padding:'1.25rem 1.5rem',overflowY:'auto' }}>
         <p style={{ color:'#c8c8d4',fontWeight:300,lineHeight:1.9,fontSize:'0.88rem',wordBreak:'break-word' }}>{entry.text}</p>
-        <p style={{ fontFamily:mono,fontSize:'0.6rem',color:'#3a3a48',marginTop:'0.75rem' }}>{fmtDate(entry.timestamp)}</p>
-        <button onClick={onFindSimilar} disabled={loading} style={{ width:'100%',marginTop:'1.25rem',padding:'11px',background:'none',border:'1px solid rgba(176,136,255,0.12)',color:loading?'#3a2260':'#c8c8d4',cursor:loading?'default':'pointer',fontSize:'0.62rem',letterSpacing:'0.15em',textTransform:'uppercase',fontFamily:mono }}>
+        <p style={{ fontFamily:mono,fontSize:'0.6rem',color:'#808092',marginTop:'0.75rem' }}>{fmtDate(entry.timestamp)}</p>
+        <button onClick={onFindSimilar} disabled={loading} style={{ width:'100%',marginTop:'1.25rem',padding:'11px',background:'none',border:'1px solid rgba(176,136,255,0.12)',color:loading?'#50506e':'#c8c8d4',cursor:loading?'default':'pointer',fontSize:'0.62rem',letterSpacing:'0.15em',textTransform:'uppercase',fontFamily:mono }}>
           {loading?'Searching...':'⟷  Find similar entries'}
         </button>
         {similar.length > 0 && (
           <div style={{ marginTop:'1.25rem' }}>
-            <p style={{ fontSize:'0.6rem',letterSpacing:'0.18em',color:'#50505e',textTransform:'uppercase',fontFamily:mono,marginBottom:'0.75rem' }}>Echoes in the space</p>
+            <p style={{ fontSize:'0.6rem',letterSpacing:'0.18em',color:'#a0a0b5',textTransform:'uppercase',fontFamily:mono,marginBottom:'0.75rem' }}>Echoes in the space</p>
             {similar.map((s:any) => (
               <div key={s.id} style={{ border:'1px solid rgba(255,107,53,0.12)',padding:'0.85rem',marginBottom:'0.6rem' }}>
                 <div style={{ display:'flex',justifyContent:'space-between',marginBottom:'0.4rem' }}>
                   <span style={{ color:'#ff6b35',fontSize:'0.6rem',fontFamily:mono }}>{(s.score*100).toFixed(1)}% match</span>
-                  <span style={{ color:'#50505e',fontSize:'0.6rem',fontFamily:mono }}>{timeAgo(s.timestamp)}</span>
+                  <span style={{ color:'#808092',fontSize:'0.6rem',fontFamily:mono }}>{timeAgo(s.timestamp)}</span>
                 </div>
                 <p style={{ color:'#c8c8d4',fontSize:'0.82rem',lineHeight:1.6,overflow:'hidden',display:'-webkit-box',WebkitLineClamp:3,WebkitBoxOrient:'vertical' as any }}>{s.text}</p>
               </div>
@@ -137,9 +137,9 @@ function Timeline({ entries, onFilter }: { entries: Entry[]; onFilter: (ids: Set
 
   return (
     <div className="timeline-wrap" style={{ position:'absolute',bottom:'1rem',left:'50%',transform:'translateX(-50%)',width:'min(480px,80vw)',zIndex:20,padding:'0.75rem 1rem',background:'rgba(10,10,18,0.7)',backdropFilter:'blur(10px)',border:'1px solid rgba(176,136,255,0.08)',maxHeight:'80px',overflowY:'hidden' as const }}>
-      <p style={{ fontFamily:mono,fontSize:'0.58rem',letterSpacing:'0.2em',color:'#50505e',textTransform:'uppercase',textAlign:'center',marginBottom:'0.6rem' }}>Timeline filter</p>
+      <p style={{ fontFamily:mono,fontSize:'0.58rem',letterSpacing:'0.2em',color:'#a0a0b5',textTransform:'uppercase',textAlign:'center',marginBottom:'0.6rem' }}>Timeline filter</p>
       <div style={{ display:'flex',alignItems:'center',gap:'0.75rem' }}>
-        <span style={{ fontFamily:mono,fontSize:'0.58rem',color:'#3a3a48',whiteSpace:'nowrap' }}>{fmtTs(range[0])}</span>
+        <span style={{ fontFamily:mono,fontSize:'0.58rem',color:'#808092',whiteSpace:'nowrap' }}>{fmtTs(range[0])}</span>
         <div style={{ flex:1,position:'relative',height:'20px',display:'flex',alignItems:'center' }}>
           <div style={{ position:'absolute',left:0,right:0,height:'2px',background:'rgba(176,136,255,0.15)',borderRadius:'1px' }}/>
           <div style={{ position:'absolute',left:`${range[0]}%`,right:`${100-range[1]}%`,height:'2px',background:'#b088ff',borderRadius:'1px' }}/>
@@ -150,7 +150,7 @@ function Timeline({ entries, onFilter }: { entries: Entry[]; onFilter: (ids: Set
             onChange={e => setRange(r => [r[0], Math.max(Number(e.target.value), r[0]+5)])}
             style={{ position:'absolute',width:'100%',appearance:'none',background:'transparent',cursor:'pointer',height:'20px' }}/>
         </div>
-        <span style={{ fontFamily:mono,fontSize:'0.58rem',color:'#3a3a48',whiteSpace:'nowrap' }}>{fmtTs(range[1])}</span>
+        <span style={{ fontFamily:mono,fontSize:'0.58rem',color:'#808092',whiteSpace:'nowrap' }}>{fmtTs(range[1])}</span>
       </div>
       <style>{`input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#b088ff;cursor:pointer;border:1px solid #050508;}`}</style>
     </div>
@@ -231,18 +231,41 @@ export default function ConstellationPage() {
     sg.setAttribute('position',new THREE.BufferAttribute(sp,3))
     scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0x222244,size:0.04})))
 
-    let theta=0,phi=Math.PI/2,radius=14,dragging=false,px=0,py=0
-    const onDown=(e:MouseEvent)=>{dragging=true;px=e.clientX;py=e.clientY}
-    const onMove=(e:MouseEvent)=>{if(!dragging)return;theta-=(e.clientX-px)*.005;phi=Math.max(.3,Math.min(Math.PI-.3,phi-(e.clientY-py)*.005));px=e.clientX;py=e.clientY}
+    let theta=0,phi=Math.PI/2,radius=14,dragging=false,px=0,py=0,moved=false
+    let autoTime=0
+
+    const onDown=(e:MouseEvent)=>{
+      dragging=true;px=e.clientX;py=e.clientY;moved=false
+    }
+    const onMove=(e:MouseEvent)=>{
+      if(!dragging)return
+      const dx=e.clientX-px; const dy=e.clientY-py
+      if(Math.abs(dx)>2||Math.abs(dy)>2)moved=true
+      theta-=dx*.005
+      phi=Math.max(.3,Math.min(Math.PI-.3,phi-dy*.005))
+      px=e.clientX;py=e.clientY
+    }
     const onUp=()=>{dragging=false}
     const onWheel=(e:WheelEvent)=>{radius=Math.max(4,Math.min(28,radius+e.deltaY*.012))}
 
-    const onTouchStart=(e:TouchEvent)=>{if(e.touches.length===1){dragging=true;px=e.touches[0].clientX;py=e.touches[0].clientY}}
-    const onTouchMove=(e:TouchEvent)=>{if(!dragging||e.touches.length!==1)return;theta-=(e.touches[0].clientX-px)*.005;phi=Math.max(.3,Math.min(Math.PI-.3,phi-(e.touches[0].clientY-py)*.005));px=e.touches[0].clientX;py=e.touches[0].clientY}
+    const onTouchStart=(e:TouchEvent)=>{
+      if(e.touches.length===1){
+        dragging=true;px=e.touches[0].clientX;py=e.touches[0].clientY;moved=false
+      }
+    }
+    const onTouchMove=(e:TouchEvent)=>{
+      if(!dragging||e.touches.length!==1)return
+      const dx=e.touches[0].clientX-px; const dy=e.touches[0].clientY-py
+      if(Math.abs(dx)>2||Math.abs(dy)>2)moved=true
+      theta-=dx*.005
+      phi=Math.max(.3,Math.min(Math.PI-.3,phi-dy*.005))
+      px=e.touches[0].clientX;py=e.touches[0].clientY
+    }
     const onTouchEnd=()=>{dragging=false}
 
     const ray=new THREE.Raycaster(); const ptr=new THREE.Vector2()
     const onClick=(e:MouseEvent)=>{
+      if(moved)return // Skip click/selection if we were dragging/rotating!
       ptr.x=(e.clientX/window.innerWidth)*2-1; ptr.y=-(e.clientY/window.innerHeight)*2+1
       ray.setFromCamera(ptr,camera)
       const hits=ray.intersectObjects(Array.from(meshes.values()))
@@ -264,7 +287,15 @@ export default function ConstellationPage() {
     let animId:number
     const animate=()=>{
       animId=requestAnimationFrame(animate)
-      if(!dragging)theta+=.0006
+      if(!dragging){
+        theta+=.0012 // Slow auto rotation sideways
+        autoTime+=.001
+        phi=Math.PI/2+Math.sin(autoTime)*0.45 // Oscillation sideways and around (diagonally/tilting)
+      }else{
+        // Align autoTime to current manual phi to prevent jump on release
+        const sinVal=Math.max(-1,Math.min(1,(phi-Math.PI/2)/0.45))
+        autoTime=Math.asin(sinVal)
+      }
       camera.position.x=radius*Math.sin(phi)*Math.sin(theta)
       camera.position.y=radius*Math.cos(phi)
       camera.position.z=radius*Math.sin(phi)*Math.cos(theta)
@@ -408,7 +439,7 @@ export default function ConstellationPage() {
 
         {/* Desktop nav */}
         <div className="desktop-nav" style={{display:'flex',gap:'1rem',alignItems:'center',flexWrap:'wrap',justifyContent:'flex-end'}}>
-          <span style={{fontFamily:mono,fontSize:'0.58rem',color:'#808092',letterSpacing:'0.1em'}}>{visibleCount} of {entries.length} entries</span>
+          <span style={{fontFamily:mono,fontSize:'0.58rem',color:'#a0a0b5',letterSpacing:'0.1em'}}>{visibleCount} of {entries.length} entries</span>
           <button onClick={()=>setShowGuide(true)} className="nav-btn">? Guide</button>
           <Link href="/report"><span className="nav-link">Weekly Report</span></Link>
           <Link href="/journal"><span className="nav-btn" style={{display:'inline-block'}}>+ New Entry</span></Link>
@@ -427,20 +458,20 @@ export default function ConstellationPage() {
         </div>
       )}
 
-      <canvas ref={canvasRef} style={{position:'absolute',inset:0,width:'100%',height:'100%'}}/>
+      <canvas ref={canvasRef} style={{position:'absolute',inset:0,width:'100%',height:'100%',touchAction:'none'}}/>
 
       {loading&&(
         <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',zIndex:30}}>
-          <div style={{width:'36px',height:'36px',border:'1px solid #3a2260',borderTopColor:'#b088ff',borderRadius:'50%',animation:'spin 2s linear infinite',marginBottom:'1rem'}}/>
-          <p style={{fontFamily:mono,fontSize:'0.65rem',color:'#3a2260',letterSpacing:'0.15em'}}>Mapping your constellation...</p>
+          <div style={{width:'36px',height:'36px',border:'1px solid #50506e',borderTopColor:'#b088ff',borderRadius:'50%',animation:'spin 2s linear infinite',marginBottom:'1rem'}}/>
+          <p style={{fontFamily:mono,fontSize:'0.65rem',color:'#808092',letterSpacing:'0.15em'}}>Mapping your constellation...</p>
         </div>
       )}
 
       {!loading&&entries.length===0&&(
         <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',zIndex:30,padding:'2rem',textAlign:'center'}}>
           <p style={{fontFamily:serif,fontSize:'2rem',fontWeight:300,color:'#c8c8d4',marginBottom:'0.75rem'}}>The space is empty.</p>
-          <p style={{color:'#50505e',marginBottom:'2rem',fontFamily:sans,fontWeight:300}}>Write your first entry to begin.</p>
-          <Link href="/journal"><span style={{fontFamily:mono,fontSize:'0.65rem',letterSpacing:'0.2em',textTransform:'uppercase',border:'1px solid #50505e',color:'#50505e',padding:'10px 24px'}}>Begin</span></Link>
+          <p style={{color:'#808092',marginBottom:'2rem',fontFamily:sans,fontWeight:300}}>Write your first entry to begin.</p>
+          <Link href="/journal"><span style={{fontFamily:mono,fontSize:'0.65rem',letterSpacing:'0.2em',textTransform:'uppercase',border:'1px solid #808092',color:'#808092',padding:'10px 24px'}}>Begin</span></Link>
         </div>
       )}
 
@@ -461,12 +492,12 @@ export default function ConstellationPage() {
       {/* Legend */}
       {!loading&&entries.length>0&&(
         <div style={{position:'absolute',bottom:'2rem',left:'1.5rem',fontFamily:mono,fontSize:'0.6rem'}}>
-          <p style={{color:'#50505e',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:'0.4rem'}}>Color = Time</p>
+          <p style={{color:'#a0a0b5',letterSpacing:'0.15em',textTransform:'uppercase',marginBottom:'0.4rem'}}>Color = Time</p>
           <div style={{display:'flex',alignItems:'center',gap:'0.6rem',marginBottom:'0.35rem'}}>
             <div style={{width:'60px',height:'2px',borderRadius:'1px',background:'linear-gradient(90deg,#3b6ea5,#b088ff,#ff6b35)'}}/>
-            <span style={{color:'#3a3a48'}}>oldest → newest</span>
+            <span style={{color:'#808092'}}>oldest → newest</span>
           </div>
-          <p style={{color:'#3a3a48'}}>Drag · Scroll to zoom · Click to explore</p>
+          <p style={{color:'#808092'}}>Drag · Scroll to zoom · Click to explore</p>
         </div>
       )}
 
