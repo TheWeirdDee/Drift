@@ -1,0 +1,27 @@
+# Environments
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Qdrant
+qdrant_storage/
+*.db
+*.sqlite3
+
+# Logs
+logs/
+*.log
+
+# Wheels
+*.whl
