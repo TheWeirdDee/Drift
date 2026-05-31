@@ -21,6 +21,17 @@ export default function JournalPage() {
   const chunksRef = useRef<Blob[]>([])
   const timerRef = useRef<any>(null)
 
+  useEffect(() => {
+    const el = document.getElementById('crc') || document.getElementById('cr')
+    if (!el) return
+    const move = (e: MouseEvent) => {
+      (el as HTMLElement).style.left = e.clientX + 'px';
+      (el as HTMLElement).style.top = e.clientY + 'px';
+    }
+    document.addEventListener('mousemove', move)
+    return () => document.removeEventListener('mousemove', move)
+  }, [])
+
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
@@ -293,12 +304,6 @@ export default function JournalPage() {
         )}
       </div>
 
-      <script dangerouslySetInnerHTML={{ __html: `
-        var cr = document.getElementById('cr');
-        document.addEventListener('mousemove', function(e) {
-          if(cr) { cr.style.left = e.clientX+'px'; cr.style.top = e.clientY+'px'; }
-        });
-      `}} />
     </main>
   )
 }
