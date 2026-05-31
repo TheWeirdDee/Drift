@@ -168,7 +168,8 @@ export default function ConstellationPage() {
   const [similarIds, setSimilarIds] = useState<string[]>([])
   const [loadingSim, setLoadingSim] = useState(false)
   const [showGuide, setShowGuide] = useState(false)
-  const [visibleIds, setVisibleIds] = useState<Set<string> | null>(null)
+  const [timelineVisibleIds, setTimelineVisibleIds] = useState<Set<string> | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -252,11 +253,13 @@ export default function ConstellationPage() {
 
     const onTouchStart=(e:TouchEvent)=>{
       if(e.touches.length===1){
+        e.preventDefault()
         dragging=true;px=e.touches[0].clientX;py=e.touches[0].clientY;moved=false
       }
     }
     const onTouchMove=(e:TouchEvent)=>{
       if(!dragging||e.touches.length!==1)return
+      e.preventDefault()
       const dx=e.touches[0].clientX-px; const dy=e.touches[0].clientY-py
       if(Math.abs(dx)>2||Math.abs(dy)>2)moved=true
       
@@ -284,8 +287,10 @@ export default function ConstellationPage() {
         }
       }
     }
+    const onDragStart = (e: Event) => e.preventDefault()
+    canvas.addEventListener('dragstart', onDragStart)
     canvas.addEventListener('mousedown',onDown); window.addEventListener('mousemove',onMove); window.addEventListener('mouseup',onUp)
-    canvas.addEventListener('touchstart',onTouchStart); canvas.addEventListener('touchmove',onTouchMove); canvas.addEventListener('touchend',onTouchEnd)
+    canvas.addEventListener('touchstart',onTouchStart, {passive: false}); canvas.addEventListener('touchmove',onTouchMove, {passive: false}); canvas.addEventListener('touchend',onTouchEnd)
     canvas.addEventListener('wheel',onWheel); canvas.addEventListener('click',onClick)
     sceneRef.current={scene,camera,meshes,entries,group,lines:null}
 
@@ -305,12 +310,13 @@ export default function ConstellationPage() {
     window.addEventListener('resize',onResize)
     return()=>{
       cancelAnimationFrame(animId);
+      canvas.removeEventListener('dragstart', onDragStart);
       canvas.removeEventListener('mousedown',onDown);
       window.removeEventListener('mousemove',onMove);
       window.removeEventListener('mouseup',onUp);
       canvas.removeEventListener('touchstart',onTouchStart);
-      window.removeEventListener('touchmove',onTouchMove);
-      window.removeEventListener('touchend',onTouchEnd);
+      canvas.removeEventListener('touchmove',onTouchMove);
+      canvas.removeEventListener('touchend',onTouchEnd);
       canvas.removeEventListener('wheel',onWheel);
       canvas.removeEventListener('click',onClick);
       window.removeEventListener('resize',onResize);
@@ -318,13 +324,20 @@ export default function ConstellationPage() {
     }
   },[entries])
 
-  // Timeline filter visibility
+  // Combined filter visibility (Timeline + Search Query)
   useEffect(()=>{
     const s=sceneRef.current; if(!s)return
+    const q=searchQuery.toLowerCase().trim()
     s.meshes.forEach((mesh:THREE.Mesh,id:string)=>{
-      mesh.visible = visibleIds===null || visibleIds.has(id)
+      const entry=entries.find(e=>e.id===id)
+      const matchesTimeline = timelineVisibleIds===null || timelineVisibleIds.has(id)
+      const matchesSearch = !q || (entry && (
+        entry.text.toLowerCase().includes(q) ||
+        entry.title.toLowerCase().includes(q)
+      ))
+      mesh.visible = matchesTimeline && matchesSearch
     })
-  },[visibleIds])
+  },[timelineVisibleIds, searchQuery, entries])
 
   // Selection + lines
   useEffect(()=>{
@@ -364,7 +377,12 @@ export default function ConstellationPage() {
     finally{setLoadingSim(false)}
   },[selected])
 
-  const visibleCount = visibleIds ? entries.filter(e=>visibleIds.has(e.id)).length : entries.length
+  const visibleCount = entries.filter(e => {
+    const matchesTimeline = timelineVisibleIds === null || timelineVisibleIds.has(e.id)
+    const q = searchQuery.toLowerCase().trim()
+    const matchesSearch = !q || e.text.toLowerCase().includes(q) || e.title.toLowerCase().includes(q)
+    return matchesTimeline && matchesSearch
+  }).length
 
   return (
     <div style={{width:'100vw',height:'100vh',background:'#050508',overflow:'hidden',position:'relative'}}>
@@ -408,7 +426,7 @@ export default function ConstellationPage() {
       <div id="crc" style={{position:'fixed',width:'8px',height:'8px',background:'#b088ff',borderRadius:'50%',pointerEvents:'none',zIndex:9999,transform:'translate(-50%,-50%)',mixBlendMode:'screen' as any}}/>
 
       {/* Nav */}
-      <nav className="nav-container" style={{position:'absolute',top:0,left:0,right:0,zIndex:40,display:'flex',justifyContent:'space-between',alignItems:'center',padding:'1.25rem 2rem',gap:'1rem'}}>
+      <nav className="nav-container" style={{position:'absolute',top:0,left:0,right:0,zIndex:40,display:'flex',justifyContent:'space-between',alignItems:'center',padding:'1.25rem 2rem',gap:'1.5rem',flexWrap:'wrap'}}>
         <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" style={{ display: 'block' }}>
             <rect width="32" height="32" fill="#050508" rx="6"/>
@@ -435,6 +453,49 @@ export default function ConstellationPage() {
           </svg>
           <span style={{fontFamily:serif,fontSize:'1.3rem',fontWeight:300,color:'#c8c8d4',letterSpacing:'0.1em'}}>DRIFT</span>
         </Link>
+
+        {/* Search Bar */}
+        <div className="search-wrap" style={{ position: 'relative', flex: '0 1 240px', minWidth: '150px' }}>
+          <input
+            type="text"
+            placeholder="Search entries..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              background: 'rgba(10,10,18,0.6)',
+              border: '1px solid rgba(176,136,255,0.15)',
+              borderRadius: '20px',
+              padding: '6px 16px 6px 34px',
+              color: '#c8c8d4',
+              fontSize: '0.72rem',
+              fontFamily: sans,
+              outline: 'none',
+              transition: 'border-color 0.2s',
+            }}
+          />
+          <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5, fontSize: '0.72rem' }}>
+            🔍
+          </span>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                color: '#808092',
+                cursor: 'pointer',
+                fontSize: '0.72rem',
+              }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
 
         {/* Desktop nav */}
         <div className="desktop-nav" style={{display:'flex',gap:'1rem',alignItems:'center',flexWrap:'wrap',justifyContent:'flex-end'}}>
@@ -485,7 +546,7 @@ export default function ConstellationPage() {
 
       {/* Timeline */}
       {!loading&&entries.length>1&&(
-        <Timeline entries={entries} onFilter={(ids)=>setVisibleIds(ids)}/>
+        <Timeline entries={entries} onFilter={(ids)=>setTimelineVisibleIds(ids)}/>
       )}
 
       {/* Legend */}
