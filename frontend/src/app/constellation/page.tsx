@@ -231,8 +231,7 @@ export default function ConstellationPage() {
     sg.setAttribute('position',new THREE.BufferAttribute(sp,3))
     scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0x222244,size:0.04})))
 
-    let theta=0,phi=Math.PI/2,radius=14,dragging=false,px=0,py=0,moved=false
-    let autoTime=0
+    let radius=14,dragging=false,px=0,py=0,moved=false
 
     const onDown=(e:MouseEvent)=>{
       dragging=true;px=e.clientX;py=e.clientY;moved=false
@@ -241,8 +240,11 @@ export default function ConstellationPage() {
       if(!dragging)return
       const dx=e.clientX-px; const dy=e.clientY-py
       if(Math.abs(dx)>2||Math.abs(dy)>2)moved=true
-      theta-=dx*.005
-      phi=Math.max(.3,Math.min(Math.PI-.3,phi-dy*.005))
+      
+      const qY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), dx * 0.005)
+      const qX = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), dy * 0.005)
+      group.quaternion.premultiply(qY).premultiply(qX)
+      
       px=e.clientX;py=e.clientY
     }
     const onUp=()=>{dragging=false}
@@ -257,8 +259,11 @@ export default function ConstellationPage() {
       if(!dragging||e.touches.length!==1)return
       const dx=e.touches[0].clientX-px; const dy=e.touches[0].clientY-py
       if(Math.abs(dx)>2||Math.abs(dy)>2)moved=true
-      theta-=dx*.005
-      phi=Math.max(.3,Math.min(Math.PI-.3,phi-dy*.005))
+      
+      const qY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), dx * 0.005)
+      const qX = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), dy * 0.005)
+      group.quaternion.premultiply(qY).premultiply(qX)
+      
       px=e.touches[0].clientX;py=e.touches[0].clientY
     }
     const onTouchEnd=()=>{dragging=false}
@@ -280,25 +285,19 @@ export default function ConstellationPage() {
       }
     }
     canvas.addEventListener('mousedown',onDown); window.addEventListener('mousemove',onMove); window.addEventListener('mouseup',onUp)
-    canvas.addEventListener('touchstart',onTouchStart); window.addEventListener('touchmove',onTouchMove); window.addEventListener('touchend',onTouchEnd)
+    canvas.addEventListener('touchstart',onTouchStart); canvas.addEventListener('touchmove',onTouchMove); canvas.addEventListener('touchend',onTouchEnd)
     canvas.addEventListener('wheel',onWheel); canvas.addEventListener('click',onClick)
-    sceneRef.current={scene,camera,meshes,entries,lines:null}
+    sceneRef.current={scene,camera,meshes,entries,group,lines:null}
 
     let animId:number
     const animate=()=>{
       animId=requestAnimationFrame(animate)
       if(!dragging){
-        theta+=.0012 // Slow auto rotation sideways
-        autoTime+=.001
-        phi=Math.PI/2+Math.sin(autoTime)*0.45 // Oscillation sideways and around (diagonally/tilting)
-      }else{
-        // Align autoTime to current manual phi to prevent jump on release
-        const sinVal=Math.max(-1,Math.min(1,(phi-Math.PI/2)/0.45))
-        autoTime=Math.asin(sinVal)
+        const qAutoY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0012)
+        const qAutoX = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), 0.0006)
+        group.quaternion.premultiply(qAutoY).premultiply(qAutoX)
       }
-      camera.position.x=radius*Math.sin(phi)*Math.sin(theta)
-      camera.position.y=radius*Math.cos(phi)
-      camera.position.z=radius*Math.sin(phi)*Math.cos(theta)
+      camera.position.set(0, 0, radius)
       camera.lookAt(0,0,0); renderer.render(scene,camera)
     }
     animate()
@@ -341,7 +340,7 @@ export default function ConstellationPage() {
       else if(similarIds.includes(id)){mat.color.set(0xff6b35);mesh.scale.setScalar(2.2)}
       else{mat.color.copy(timeColor(tN));mesh.scale.setScalar(selected?.id?0.7:1)}
     })
-    if(s.lines){s.scene.remove(s.lines);s.lines.geometry.dispose();(s.lines.material as THREE.Material).dispose();s.lines=null}
+    if(s.lines){s.group.remove(s.lines);s.lines.geometry.dispose();(s.lines.material as THREE.Material).dispose();s.lines=null}
     if(selected&&similarIds.length>0){
       const sel=s.entries.find((e:Entry)=>e.id===selected.id)
       if(sel?.position){
@@ -353,7 +352,7 @@ export default function ConstellationPage() {
         if(pts.length>0){
           const geo=new THREE.BufferGeometry().setFromPoints(pts)
           const mat=new THREE.LineBasicMaterial({color:0xff6b35,transparent:true,opacity:0.45})
-          s.lines=new THREE.LineSegments(geo,mat); s.scene.add(s.lines)
+          s.lines=new THREE.LineSegments(geo,mat); s.group.add(s.lines)
         }
       }
     }

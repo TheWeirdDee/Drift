@@ -93,18 +93,24 @@ async def search_similar(
     """Find nearest neighbors in vector space."""
     client = get_client()
 
+    # Query more points than limit to allow filtering out duplicate text
     response = await client.query_points(
         collection_name=COLLECTION_NAME,
         query=vector,
-        limit=limit + (1 if exclude_id else 0),
+        limit=limit * 3 + (1 if exclude_id else 0),
         with_payload=True
     )
     results = response.points
 
     output = []
+    seen_texts = set()
     for r in results:
         if exclude_id and str(r.id) == exclude_id:
             continue
+        text_content = r.payload.get("text", "").strip()
+        if not text_content or text_content in seen_texts:
+            continue
+        seen_texts.add(text_content)
         output.append({
             "id": str(r.id),
             "text": r.payload.get("text", ""),
