@@ -136,7 +136,7 @@ function Timeline({ entries, onFilter }: { entries: Entry[]; onFilter: (ids: Set
   if (minT === maxT) return null
 
   return (
-    <div style={{ position:'absolute',bottom:'6rem',left:'50%',transform:'translateX(-50%)',width:'min(480px,80vw)',zIndex:20,padding:'0.75rem 1rem',background:'rgba(10,10,18,0.7)',backdropFilter:'blur(10px)',border:'1px solid rgba(176,136,255,0.08)' }}>
+    <div className="timeline-wrap" style={{ position:'absolute',bottom:'1rem',left:'50%',transform:'translateX(-50%)',width:'min(480px,80vw)',zIndex:20,padding:'0.75rem 1rem',background:'rgba(10,10,18,0.7)',backdropFilter:'blur(10px)',border:'1px solid rgba(176,136,255,0.08)',maxHeight:'80px',overflowY:'hidden' as const }}>
       <p style={{ fontFamily:mono,fontSize:'0.58rem',letterSpacing:'0.2em',color:'#50505e',textTransform:'uppercase',textAlign:'center',marginBottom:'0.6rem' }}>Timeline filter</p>
       <div style={{ display:'flex',alignItems:'center',gap:'0.75rem' }}>
         <span style={{ fontFamily:mono,fontSize:'0.58rem',color:'#3a3a48',whiteSpace:'nowrap' }}>{fmtTs(range[0])}</span>
@@ -329,6 +329,7 @@ export default function ConstellationPage() {
         @keyframes spin{to{transform:rotate(360deg)}}
         @media(max-width:640px){.desktop-nav{display:none!important}.mobile-menu-btn{display:flex!important}}
         @media(min-width:641px){.mobile-menu-btn{display:none!important}.mobile-dropdown{display:none!important}}
+        @media(max-width:640px){ .timeline-wrap{ bottom: 1rem !important; left: 1rem !important; right: 1rem !important; transform: none !important; width: auto !important; } }
       `}</style>
 
       {/* Cursor */}
