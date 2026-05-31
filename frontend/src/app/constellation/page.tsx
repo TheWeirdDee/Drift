@@ -172,6 +172,17 @@ export default function ConstellationPage() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
+    const el = document.getElementById('crc') || document.getElementById('cr')
+    if (!el) return
+    const move = (e: MouseEvent) => {
+      (el as HTMLElement).style.left = e.clientX + 'px';
+      (el as HTMLElement).style.top = e.clientY + 'px';
+    }
+    document.addEventListener('mousemove', move)
+    return () => document.removeEventListener('mousemove', move)
+  }, [])
+
+  useEffect(() => {
     const seen = localStorage.getItem(GUIDE_KEY)
     if (!seen) setShowGuide(true)
   }, [])
@@ -393,7 +404,6 @@ export default function ConstellationPage() {
         </div>
       )}
 
-      <script dangerouslySetInnerHTML={{__html:`var c=document.getElementById('crc');document.addEventListener('mousemove',function(e){if(c){c.style.left=e.clientX+'px';c.style.top=e.clientY+'px';}});`}}/>
     </div>
   )
 }
