@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Outfit:wght@200;300;400;500&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+
+  --color-void: #050508;
+  --color-void-2: #0a0a12;
+  --color-void-3: #0f0f1a;
+  --color-ember: #ff6b35;
+  --color-ember-dim: #7a3318;
+  --color-frost: #7eb8f7;
+  --color-frost-dim: #2a4a70;
+  --color-ghost: #c8c8d4;
+  --color-ghost-dim: #50505e;
+  --color-pulse: #b088ff;
+  --color-pulse-dim: #3a2260;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse 4s ease-in-out infinite;
+  --animate-drift: drift 20s ease-in-out infinite;
+  --animate-fade-up: fadeUp 0.8s ease forwards;
+  --animate-glow: glow 3s ease-in-out infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes drift {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(8px, -12px) rotate(1deg); }
+    66% { transform: translate(-6px, 8px) rotate(-1deg); }
+  }
+  @keyframes fadeUp {
+    from: { opacity: 0; transform: translateY(24px); }
+    to: { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 8px 2px rgba(176, 136, 255, 0.3); }
+    50% { box-shadow: 0 0 24px 8px rgba(176, 136, 255, 0.6); }
+  }
+}
+
+
+:root {
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: #050508;
+  color: #c8c8d4;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #050508;
+}
+::-webkit-scrollbar-thumb {
+  background: #3a2260;
+  border-radius: 2px;
+}
+
+/* Selection */
+::selection {
+  background: rgba(176, 136, 255, 0.3);
+  color: #ffffff;
+}
+
+/* Noise texture overlay */
+.noise::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+/* Cursor */
+* {
+  cursor: none !important;
+}
+
+.cursor {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: #b088ff;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+  mix-blend-mode: screen;
+}
+
+.cursor-ring {
+  position: fixed;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(176, 136, 255, 0.4);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s ease, width 0.3s ease, height 0.3s ease;
+}
+
+/* Stagger animation helpers */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.3s; }
+.stagger-3 { animation-delay: 0.5s; }
+.stagger-4 { animation-delay: 0.7s; }
+.stagger-5 { animation-delay: 0.9s; }
+
+/* Entry card styles */
+.entry-card {
+  background: rgba(15, 15, 26, 0.8);
+  border: 1px solid rgba(176, 136, 255, 0.12);
+  backdrop-filter: blur(20px);
+}
+
+.entry-card:hover {
+  border-color: rgba(176, 136, 255, 0.3);
+}
+
+/* Glowing line */
+.glow-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #b088ff, transparent);
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
