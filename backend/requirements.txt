@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+qdrant-client
+sentence-transformers
+openai
+python-multipart
+python-dotenv
+pydantic
+numpy
+httpx
