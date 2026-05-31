@@ -99,15 +99,15 @@ export default function JournalPage() {
         <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" style={{ display: 'block' }}>
             <rect width="32" height="32" fill="#050508" rx="6"/>
-            <line x1="16" y1="14" x2="22" y2="10" stroke="rgba(176,136,255,0.3)" stroke-width="0.8"/>
-            <line x1="16" y1="14" x2="22" y2="19" stroke="rgba(176,136,255,0.3)" stroke-width="0.8"/>
-            <line x1="16" y1="14" x2="10" y2="11" stroke="rgba(126,184,247,0.3)" stroke-width="0.8"/>
-            <line x1="22" y1="10" x2="22" y2="19" stroke="rgba(176,136,255,0.2)" stroke-width="0.8"/>
-            <line x1="10" y1="11" x2="9" y2="19" stroke="rgba(126,184,247,0.2)" stroke-width="0.8"/>
-            <line x1="9" y1="19" x2="16" y2="14" stroke="rgba(126,184,247,0.2)" stroke-width="0.8"/>
-            <line x1="16" y1="14" x2="14" y2="22" stroke="rgba(255,107,53,0.2)" stroke-width="0.8"/>
-            <line x1="14" y1="22" x2="9" y2="19" stroke="rgba(255,107,53,0.2)" stroke-width="0.8"/>
-            <line x1="22" y1="19" x2="14" y2="22" stroke="rgba(255,107,53,0.2)" stroke-width="0.8"/>
+            <line x1="16" y1="14" x2="22" y2="10" stroke="rgba(176,136,255,0.3)" strokeWidth="0.8"/>
+            <line x1="16" y1="14" x2="22" y2="19" stroke="rgba(176,136,255,0.3)" strokeWidth="0.8"/>
+            <line x1="16" y1="14" x2="10" y2="11" stroke="rgba(126,184,247,0.3)" strokeWidth="0.8"/>
+            <line x1="22" y1="10" x2="22" y2="19" stroke="rgba(176,136,255,0.2)" strokeWidth="0.8"/>
+            <line x1="10" y1="11" x2="9" y2="19" stroke="rgba(126,184,247,0.2)" strokeWidth="0.8"/>
+            <line x1="9" y1="19" x2="16" y2="14" stroke="rgba(126,184,247,0.2)" strokeWidth="0.8"/>
+            <line x1="16" y1="14" x2="14" y2="22" stroke="rgba(255,107,53,0.2)" strokeWidth="0.8"/>
+            <line x1="14" y1="22" x2="9" y2="19" stroke="rgba(255,107,53,0.2)" strokeWidth="0.8"/>
+            <line x1="22" y1="19" x2="14" y2="22" stroke="rgba(255,107,53,0.2)" strokeWidth="0.8"/>
             <circle cx="16" cy="14" r="4.5" fill="#b088ff" opacity="0.08"/>
             <circle cx="16" cy="14" r="3" fill="#b088ff" opacity="0.1"/>
             <circle cx="16" cy="14" r="2.5" fill="#b088ff" opacity="0.95"/>
