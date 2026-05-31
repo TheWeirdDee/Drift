@@ -93,6 +93,17 @@ export default function ReportPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    const el = document.getElementById('crc') || document.getElementById('cr')
+    if (!el) return
+    const move = (e: MouseEvent) => {
+      (el as HTMLElement).style.left = e.clientX + 'px';
+      (el as HTMLElement).style.top = e.clientY + 'px';
+    }
+    document.addEventListener('mousemove', move)
+    return () => document.removeEventListener('mousemove', move)
+  }, [])
+
+  useEffect(() => {
     getDriftReport()
       .then(setReport)
       .catch(() => setError('Not enough entries yet. Write at least 3 entries and come back.'))
@@ -288,12 +299,6 @@ export default function ReportPage() {
         )}
       </div>
 
-      <script dangerouslySetInnerHTML={{ __html: `
-        var cr = document.getElementById('cr');
-        document.addEventListener('mousemove', function(e) {
-          if(cr) { cr.style.left = e.clientX + 'px'; cr.style.top = e.clientY + 'px'; }
-        });
-      `}} />
     </main>
   )
 }
