@@ -32,3 +32,7 @@ Thumbs.db
 # Local database storage
 qdrant_db/
 
+# Temporary files and backups
+constellation_v3.tsx
+main_cors_fixed.py
+
