@@ -1,7 +1,7 @@
 fastapi
 uvicorn[standard]
 qdrant-client
-sentence-transformers
+fastembed
 openai
 python-multipart
 python-dotenv
