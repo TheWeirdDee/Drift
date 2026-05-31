@@ -1,3 +1,5 @@
+![DRIFT Header](frontend/public/header.png)
+
 # DRIFT
 ### *A mirror that shows you who you are becoming.*
 
