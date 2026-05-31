@@ -35,23 +35,50 @@ export default function JournalPage() {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const recorder = new MediaRecorder(stream)
+      
+      let options = {}
+      if (typeof MediaRecorder !== 'undefined') {
+        if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+          options = { mimeType: 'audio/webm;codecs=opus' }
+        } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+          options = { mimeType: 'audio/webm' }
+        } else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
+          options = { mimeType: 'audio/ogg;codecs=opus' }
+        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          options = { mimeType: 'audio/mp4' }
+        }
+      }
+
+      const recorder = new MediaRecorder(stream, options)
       chunksRef.current = []
-      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data) }
+      recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          chunksRef.current.push(e.data)
+        }
+      }
       recorder.onstop = async () => {
         stream.getTracks().forEach(t => t.stop())
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' })
+        const mimeType = recorder.mimeType || 'audio/webm'
+        const blob = new Blob(chunksRef.current, { type: mimeType })
+        console.log("Drift Audio Recording: chunks =", chunksRef.current.length, "size =", blob.size, "bytes, type =", mimeType)
         try {
-          const file = new File([blob], 'recording.webm', { type: 'audio/webm' })
+          const ext = mimeType.includes('mp4') ? 'm4a' : mimeType.includes('ogg') ? 'ogg' : 'webm'
+          const file = new File([blob], `recording.${ext}`, { type: mimeType })
           const entry = await createVoiceEntry(file)
           setLastEntry(entry); setStatus('success')
-        } catch { setStatus('error') }
+        } catch (err) {
+          console.error("Drift Recording upload error:", err)
+          setStatus('error')
+        }
       }
       recorder.start()
       mediaRef.current = recorder
       setStatus('recording'); setRecordingTime(0)
       timerRef.current = setInterval(() => setRecordingTime(t => t + 1), 1000)
-    } catch { setStatus('error') }
+    } catch (err) {
+      console.error("Drift Recording start error:", err)
+      setStatus('error')
+    }
   }
 
   const stopRecording = () => {

@@ -75,6 +75,7 @@ async def create_entry(entry: EntryCreate):
 async def create_voice_entry(file: UploadFile = File(...)):
     """Create a new journal entry from voice recording."""
     audio_bytes = await file.read()
+    print(f"Received voice file: {file.filename}, content_type: {file.content_type}, size: {len(audio_bytes)} bytes", flush=True)
     transcript = await transcribe_audio(audio_bytes, file.filename or "recording.webm")
 
     entry_id = str(uuid.uuid4())

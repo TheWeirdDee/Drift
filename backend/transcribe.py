@@ -30,7 +30,10 @@ async def transcribe_audio(audio_bytes: bytes, filename: str = "recording.webm")
         transcript_res = await client.post(
             "https://api.assemblyai.com/v2/transcript",
             headers={"authorization": ASSEMBLYAI_KEY},
-            json={"audio_url": upload_url}
+            json={
+                "audio_url": upload_url,
+                "speech_models": ["universal-3-pro", "universal-2"]
+            }
         )
         if transcript_res.status_code not in (200, 201):
             raise Exception(f"AssemblyAI transcript request failed ({transcript_res.status_code}): {transcript_res.text}")

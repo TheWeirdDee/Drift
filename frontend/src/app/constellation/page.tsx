@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import Link from 'next/link'
 import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { getEntries, getSimilarEntries } from '@/lib/api'
 import { projectToPCA3D } from '@/pca'
 
@@ -232,95 +233,118 @@ export default function ConstellationPage() {
     sg.setAttribute('position',new THREE.BufferAttribute(sp,3))
     scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0x222244,size:0.04})))
 
-    let radius=14,dragging=false,px=0,py=0,moved=false
+    const controls = new OrbitControls(camera, renderer.domElement)
+    controls.enableDamping = true
+    controls.dampingFactor = 0.05
+    controls.enableZoom = true
+    controls.enableRotate = true
+    controls.enablePan = true
+    controls.autoRotate = true
+    controls.autoRotateSpeed = 0.4
+    controls.minDistance = 4
+    controls.maxDistance = 28
 
-    const onDown=(e:MouseEvent)=>{
-      dragging=true;px=e.clientX;py=e.clientY;moved=false
-    }
-    const onMove=(e:MouseEvent)=>{
-      if(!dragging)return
-      const dx=e.clientX-px; const dy=e.clientY-py
-      if(Math.abs(dx)>2||Math.abs(dy)>2)moved=true
-      
-      const qY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), dx * 0.005)
-      const qX = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), dy * 0.005)
-      group.quaternion.premultiply(qY).premultiply(qX)
-      
-      px=e.clientX;py=e.clientY
-    }
-    const onUp=()=>{dragging=false}
-    const onWheel=(e:WheelEvent)=>{radius=Math.max(4,Math.min(28,radius+e.deltaY*.012))}
+    let autoRotateTimer: any
+    controls.addEventListener('start', () => {
+      controls.autoRotate = false
+    })
+    controls.addEventListener('end', () => {
+      clearTimeout(autoRotateTimer)
+      autoRotateTimer = setTimeout(() => {
+        controls.autoRotate = true
+      }, 5000)
+    })
 
-    const onTouchStart=(e:TouchEvent)=>{
-      if(e.touches.length===1){
-        e.preventDefault()
-        dragging=true;px=e.touches[0].clientX;py=e.touches[0].clientY;moved=false
-      }
+    const ray = new THREE.Raycaster(); const ptr = new THREE.Vector2()
+    
+    let startX = 0, startY = 0
+    const onMouseDown = (e: MouseEvent) => {
+      startX = e.clientX
+      startY = e.clientY
     }
-    const onTouchMove=(e:TouchEvent)=>{
-      if(!dragging||e.touches.length!==1)return
-      e.preventDefault()
-      const dx=e.touches[0].clientX-px; const dy=e.touches[0].clientY-py
-      if(Math.abs(dx)>2||Math.abs(dy)>2)moved=true
-      
-      const qY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), dx * 0.005)
-      const qX = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), dy * 0.005)
-      group.quaternion.premultiply(qY).premultiply(qX)
-      
-      px=e.touches[0].clientX;py=e.touches[0].clientY
-    }
-    const onTouchEnd=()=>{dragging=false}
-
-    const ray=new THREE.Raycaster(); const ptr=new THREE.Vector2()
-    const onClick=(e:MouseEvent)=>{
-      if(moved)return // Skip click/selection if we were dragging/rotating!
-      ptr.x=(e.clientX/window.innerWidth)*2-1; ptr.y=-(e.clientY/window.innerHeight)*2+1
-      ray.setFromCamera(ptr,camera)
-      const hits=ray.intersectObjects(Array.from(meshes.values()))
-      if(hits.length>0){
-        const id=hits[0].object.userData.id
-        const entry=entries.find(en=>en.id===id)
-        if(entry){
-          setSelected(entry)
-          setSimilar([])
-          setSimilarIds([])
+    const onMouseUp = (e: MouseEvent) => {
+      const dx = e.clientX - startX
+      const dy = e.clientY - startY
+      const dist = Math.sqrt(dx * dx + dy * dy)
+      if (dist < 4) {
+        ptr.x = (e.clientX / window.innerWidth) * 2 - 1
+        ptr.y = -(e.clientY / window.innerHeight) * 2 + 1
+        ray.setFromCamera(ptr, camera)
+        const hits = ray.intersectObjects(Array.from(meshes.values()))
+        if (hits.length > 0) {
+          const id = hits[0].object.userData.id
+          const entry = entries.find(en => en.id === id)
+          if (entry) {
+            setSelected(entry)
+            setSimilar([])
+            setSimilarIds([])
+          }
         }
       }
     }
-    const onDragStart = (e: Event) => e.preventDefault()
-    canvas.addEventListener('dragstart', onDragStart)
-    canvas.addEventListener('mousedown',onDown); window.addEventListener('mousemove',onMove); window.addEventListener('mouseup',onUp)
-    canvas.addEventListener('touchstart',onTouchStart, {passive: false}); canvas.addEventListener('touchmove',onTouchMove, {passive: false}); canvas.addEventListener('touchend',onTouchEnd)
-    canvas.addEventListener('wheel',onWheel); canvas.addEventListener('click',onClick)
-    sceneRef.current={scene,camera,meshes,entries,group,lines:null}
 
-    let animId:number
-    const animate=()=>{
-      animId=requestAnimationFrame(animate)
-      if(!dragging){
-        const qAutoY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0012)
-        const qAutoX = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), 0.0006)
-        group.quaternion.premultiply(qAutoY).premultiply(qAutoX)
+    let touchStartX = 0, touchStartY = 0
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX
+        touchStartY = e.touches[0].clientY
       }
-      camera.position.set(0, 0, radius)
-      camera.lookAt(0,0,0); renderer.render(scene,camera)
+    }
+    const onTouchEnd = (e: TouchEvent) => {
+      if (e.changedTouches.length === 1) {
+        const dx = e.changedTouches[0].clientX - touchStartX
+        const dy = e.changedTouches[0].clientY - touchStartY
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (dist < 4) {
+          ptr.x = (e.changedTouches[0].clientX / window.innerWidth) * 2 - 1
+          ptr.y = -(e.changedTouches[0].clientY / window.innerHeight) * 2 + 1
+          ray.setFromCamera(ptr, camera)
+          const hits = ray.intersectObjects(Array.from(meshes.values()))
+          if (hits.length > 0) {
+            const id = hits[0].object.userData.id
+            const entry = entries.find(en => en.id === id)
+            if (entry) {
+              setSelected(entry)
+              setSimilar([])
+              setSimilarIds([])
+            }
+          }
+        }
+      }
+    }
+
+    canvas.addEventListener('mousedown', onMouseDown)
+    canvas.addEventListener('mouseup', onMouseUp)
+    canvas.addEventListener('touchstart', onTouchStart, { passive: true })
+    canvas.addEventListener('touchend', onTouchEnd, { passive: true })
+
+    sceneRef.current = { scene, camera, meshes, entries, group, lines: null }
+
+    let animId: number
+    const animate = () => {
+      animId = requestAnimationFrame(animate)
+      controls.update()
+      renderer.render(scene, camera)
     }
     animate()
-    const onResize=()=>{camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight)}
-    window.addEventListener('resize',onResize)
-    return()=>{
-      cancelAnimationFrame(animId);
-      canvas.removeEventListener('dragstart', onDragStart);
-      canvas.removeEventListener('mousedown',onDown);
-      window.removeEventListener('mousemove',onMove);
-      window.removeEventListener('mouseup',onUp);
-      canvas.removeEventListener('touchstart',onTouchStart);
-      canvas.removeEventListener('touchmove',onTouchMove);
-      canvas.removeEventListener('touchend',onTouchEnd);
-      canvas.removeEventListener('wheel',onWheel);
-      canvas.removeEventListener('click',onClick);
-      window.removeEventListener('resize',onResize);
-      renderer.dispose();
+
+    const onResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight
+      camera.updateProjectionMatrix()
+      renderer.setSize(window.innerWidth, window.innerHeight)
+    }
+    window.addEventListener('resize', onResize)
+
+    return () => {
+      cancelAnimationFrame(animId)
+      clearTimeout(autoRotateTimer)
+      canvas.removeEventListener('mousedown', onMouseDown)
+      canvas.removeEventListener('mouseup', onMouseUp)
+      canvas.removeEventListener('touchstart', onTouchStart)
+      canvas.removeEventListener('touchend', onTouchEnd)
+      window.removeEventListener('resize', onResize)
+      controls.dispose()
+      renderer.dispose()
     }
   },[entries])
 
@@ -331,11 +355,11 @@ export default function ConstellationPage() {
     s.meshes.forEach((mesh:THREE.Mesh,id:string)=>{
       const entry=entries.find(e=>e.id===id)
       const matchesTimeline = timelineVisibleIds===null || timelineVisibleIds.has(id)
-      const matchesSearch = !q || (entry && (
+      const matchesSearch = !q || !!(entry && (
         entry.text.toLowerCase().includes(q) ||
         entry.title.toLowerCase().includes(q)
       ))
-      mesh.visible = matchesTimeline && matchesSearch
+      mesh.visible = !!(matchesTimeline && matchesSearch)
     })
   },[timelineVisibleIds, searchQuery, entries])
 
