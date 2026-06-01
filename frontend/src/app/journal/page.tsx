@@ -334,7 +334,7 @@ export default function JournalPage() {
               }}>+ New entry</button>
             </div>
             <p style={{ color: '#c8c8d4', fontWeight: 300, lineHeight: 1.8, fontSize: '0.9rem', marginBottom: '1rem' }}>
-              {lastEntry.text?.slice(0, 200)}{lastEntry.text?.length > 200 ? '...' : ''}
+              {lastEntry.text}
             </p>
             <p style={{ fontFamily: mono, fontSize: '0.6rem', color: '#808092', marginBottom: '1.25rem', letterSpacing: '0.08em' }}>
               Vector: [{lastEntry.vector_preview?.map((v: number) => v.toFixed(3)).join(', ')}...]
